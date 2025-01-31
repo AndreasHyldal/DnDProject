@@ -1,5 +1,10 @@
 @page "/login"
+@using DndReexam.Layout
 @layout LoginLayout
+@using Blazored.LocalStorage
+@using Microsoft.AspNetCore.Components.Authorization
+@using DndReexam.Services
+@namespace DndReexam.Components.Pages
 @inject IHttpClientFactory ClientFactory
 @inject ILocalStorageService LocalStorage
 @inject AuthenticationStateProvider AuthenticationStateProvider
