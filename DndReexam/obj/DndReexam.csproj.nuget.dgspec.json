@@ -1,17 +1,17 @@
 {
   "format": 1,
   "restore": {
-    "c:\\Users\\andre\\OneDrive\\Skrivebord\\git clones\\DND_Reexam\\DndReexam\\DndReexam.csproj": {}
+    "C:\\Users\\andre\\OneDrive\\Skrivebord\\git clones\\DnDProject\\DndReexam\\DndReexam.csproj": {}
   },
   "projects": {
-    "c:\\Users\\andre\\OneDrive\\Skrivebord\\git clones\\DND_Reexam\\DndReexam\\DndReexam.csproj": {
+    "C:\\Users\\andre\\OneDrive\\Skrivebord\\git clones\\DnDProject\\DndReexam\\DndReexam.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "c:\\Users\\andre\\OneDrive\\Skrivebord\\git clones\\DND_Reexam\\DndReexam\\DndReexam.csproj",
+        "projectUniqueName": "C:\\Users\\andre\\OneDrive\\Skrivebord\\git clones\\DnDProject\\DndReexam\\DndReexam.csproj",
         "projectName": "DndReexam",
-        "projectPath": "c:\\Users\\andre\\OneDrive\\Skrivebord\\git clones\\DND_Reexam\\DndReexam\\DndReexam.csproj",
+        "projectPath": "C:\\Users\\andre\\OneDrive\\Skrivebord\\git clones\\DnDProject\\DndReexam\\DndReexam.csproj",
         "packagesPath": "C:\\Users\\andre\\.nuget\\packages\\",
-        "outputPath": "c:\\Users\\andre\\OneDrive\\Skrivebord\\git clones\\DND_Reexam\\DndReexam\\obj\\",
+        "outputPath": "C:\\Users\\andre\\OneDrive\\Skrivebord\\git clones\\DnDProject\\DndReexam\\obj\\",
         "projectStyle": "PackageReference",
         "configFilePaths": [
           "C:\\Users\\andre\\AppData\\Roaming\\NuGet\\NuGet.Config"

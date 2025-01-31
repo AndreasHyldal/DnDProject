@@ -13,11 +13,11 @@
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "C:\\Users\\andre\\OneDrive\\Skrivebord\\git clones\\DND_Reexam\\DndReexam\\DndReexam.csproj",
+      "projectUniqueName": "C:\\Users\\andre\\OneDrive\\Skrivebord\\git clones\\DnDProject\\DndReexam\\DndReexam.csproj",
       "projectName": "DndReexam",
-      "projectPath": "C:\\Users\\andre\\OneDrive\\Skrivebord\\git clones\\DND_Reexam\\DndReexam\\DndReexam.csproj",
+      "projectPath": "C:\\Users\\andre\\OneDrive\\Skrivebord\\git clones\\DnDProject\\DndReexam\\DndReexam.csproj",
       "packagesPath": "C:\\Users\\andre\\.nuget\\packages\\",
-      "outputPath": "C:\\Users\\andre\\OneDrive\\Skrivebord\\git clones\\DND_Reexam\\DndReexam\\obj\\",
+      "outputPath": "C:\\Users\\andre\\OneDrive\\Skrivebord\\git clones\\DnDProject\\DndReexam\\obj\\",
       "projectStyle": "PackageReference",
       "configFilePaths": [
         "C:\\Users\\andre\\AppData\\Roaming\\NuGet\\NuGet.Config"
