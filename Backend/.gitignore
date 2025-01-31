@@ -1,0 +1,51 @@
+# Build output directories
+bin/
+obj/
+out/
+
+# User-specific files
+*.user
+*.suo
+*.vscode
+*.swp
+*.sln.docstates
+
+# Logs
+logs/
+*.log
+*.tlog
+*.log*
+
+# NuGet Packages
+*.nupkg
+*.snupkg
+packages/
+.nuget/
+
+# Visual Studio & Rider Cache
+.vs/
+.idea/
+*.sln.iml
+
+# Dependency Caches
+node_modules/
+npm-debug.log
+yarn.lock
+pnpm-lock.yaml
+bower_components/
+
+# Runtime & Generated Files
+wwwroot/dist/
+wwwroot/node_modules/
+wwwroot/css/
+wwwroot/js/
+wwwroot/lib/
+appsettings*.json
+
+# System-specific files
+.DS_Store
+Thumbs.db
+
+# Secrets & Credentials
+secrets.json
+.env
