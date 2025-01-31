@@ -1,0 +1,33 @@
+@inject NavigationManager NavManager
+
+<h2>@PageTitle</h2>
+
+@code {
+    private string PageTitle = "Dashboard"; // Default title
+
+    protected override void OnInitialized()
+    {
+        SetPageTitle(NavManager.Uri);
+        NavManager.LocationChanged += (sender, args) => SetPageTitle(args.Location);
+    }
+
+    private void SetPageTitle(string url)
+    {
+        var path = NavManager.ToBaseRelativePath(url).TrimEnd('/');
+
+        PageTitle = path switch
+        {
+            "" => "Dashboard",            // Main Page
+            "employees" => "Employees",
+            "employees/absences" => "Employee Absences",
+            "mine" => "My Account",
+            "mine/timesheets" => "Timesheets",
+            "mine/absences" => "My Absences",
+            "admin" => "Administration",
+            "login" => "Login",
+            _ => "Page Not Found"
+        };
+
+        StateHasChanged(); // Forces UI update
+    }
+}
