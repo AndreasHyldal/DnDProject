@@ -1,0 +1,109 @@
+* {
+    font-family: "Roboto", sans-serif;
+}
+
+header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 20px;
+    background-color: white;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    position: fixed;
+    width: 100%;
+    z-index: 2;
+}
+
+.buttons {
+    display: flex;
+    gap: 15px;
+}
+
+.container {
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+}
+
+.login-btn, .signup-btn {
+    padding: 10px 20px;
+    border: 1px solid #011363;
+    color: #011363;
+    text-decoration: none;
+    background-color: transparent;
+    border-radius: 20px;
+    font-size: 16px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: .3s ease;
+}
+
+.login-btn-2 {
+    padding: 10px 20px;
+    border: 1px solid white;
+    color: white;
+    text-decoration: none;
+    background-color: transparent;
+    border-radius: 20px;
+    font-size: 16px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: .3s ease;
+}
+
+.signup-btn {
+    background-color: #011363;
+    color: white;
+}
+
+.login-btn:hover, .login-btn-2:hover, .signup-btn:hover {
+    background-color: #4c7c8f;
+    color: white;
+    border-color: #4c7c8f;
+}
+
+.hero {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    height: 100vh; /* Adjust height minus header */
+    text-align: center;
+    background-image: url('/images/hero-background.jpg'); /* Path to your background image */
+    background-size: cover; /* Ensures the image covers the entire section */
+    background-position: center; /* Centers the image */
+    background-repeat: no-repeat; /* Prevents the image from repeating */
+    color: white; /* Adjust text color to ensure readability */
+    padding: 20px;
+}
+
+.hero::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.2); /* Black overlay with 50% opacity */
+    z-index: 1; /* Make sure it's behind the text */
+}
+
+.hero h1, .hero p, .hero .buttons {
+    position: relative;
+    z-index: 2; /* Ensure text is above the overlay */
+}
+
+.hero h1 {
+    font-size: 4.5rem;
+    margin-bottom: 20px;
+    color: white; /* Change text color for better contrast */
+    width: 64%;
+}
+
+.hero p {
+    font-size: 1.5rem;
+    line-height: 2rem;
+    margin-bottom: 40px;
+    color: white; /* Change text color for better contrast */
+    width: 36%;
+}
