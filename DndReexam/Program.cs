@@ -1,18 +1,23 @@
 using DndReexam.Components;
 using Havit.Blazor.Components.Web;
 using MudBlazor.Services;
+using DndReexam.Services; // Import your AuthService namespace
+using Blazored.LocalStorage; // Import Blazored.LocalStorage for LocalStorageService
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Add services to the container.
+// Add services to the container
 builder.Services.AddRazorComponents()
     .AddInteractiveServerComponents();
 builder.Services.AddHxServices();
 builder.Services.AddMudServices();
+builder.Services.AddBlazoredLocalStorage(); // Register Blazored.LocalStorage
+builder.Services.AddScoped<IAuthService, AuthService>(); // Register AuthService
+builder.Services.AddHttpClient(); // Register HttpClient
 
 var app = builder.Build();
 
-// Configure the HTTP request pipeline.
+// Configure the HTTP request pipeline
 if (!app.Environment.IsDevelopment())
 {
     app.UseExceptionHandler("/Error", createScopeForErrors: true);
@@ -21,8 +26,6 @@ if (!app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
-
-
 app.UseAntiforgery();
 
 app.MapStaticAssets();
