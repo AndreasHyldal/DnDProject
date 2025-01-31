@@ -13,7 +13,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("DndReexam")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+b63a1a85b6c6695f657d2206580c7ecd813b154f")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+4fc691acd177d85a2fe9996a23eee4e24116f008")]
 [assembly: System.Reflection.AssemblyProductAttribute("DndReexam")]
 [assembly: System.Reflection.AssemblyTitleAttribute("DndReexam")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]

@@ -143,8 +143,6 @@ C:\Users\andre\OneDrive\Skrivebord\git clones\DnDProject\DndReexam\obj\Debug\net
 C:\Users\andre\OneDrive\Skrivebord\git clones\DnDProject\DndReexam\obj\Debug\net9.0\compressed\44ys7j1r4u-h1s4sie4z3.gz
 C:\Users\andre\OneDrive\Skrivebord\git clones\DnDProject\DndReexam\obj\Debug\net9.0\compressed\21ur231wgr-63fj8s7r0e.gz
 C:\Users\andre\OneDrive\Skrivebord\git clones\DnDProject\DndReexam\obj\Debug\net9.0\compressed\rq49qx7swo-0j3bgjxly4.gz
-C:\Users\andre\OneDrive\Skrivebord\git clones\DnDProject\DndReexam\obj\Debug\net9.0\compressed\p0c60rjn9l-gom3zqb6i8.gz
-C:\Users\andre\OneDrive\Skrivebord\git clones\DnDProject\DndReexam\obj\Debug\net9.0\compressed\rbhv97jegs-gom3zqb6i8.gz
 C:\Users\andre\OneDrive\Skrivebord\git clones\DnDProject\DndReexam\obj\Debug\net9.0\staticwebassets.build.json
 C:\Users\andre\OneDrive\Skrivebord\git clones\DnDProject\DndReexam\obj\Debug\net9.0\staticwebassets.development.json
 C:\Users\andre\OneDrive\Skrivebord\git clones\DnDProject\DndReexam\obj\Debug\net9.0\staticwebassets.build.endpoints.json
@@ -160,3 +158,6 @@ C:\Users\andre\OneDrive\Skrivebord\git clones\DnDProject\DndReexam\obj\Debug\net
 C:\Users\andre\OneDrive\Skrivebord\git clones\DnDProject\DndReexam\obj\Debug\net9.0\DndReexam.pdb
 C:\Users\andre\OneDrive\Skrivebord\git clones\DnDProject\DndReexam\obj\Debug\net9.0\DndReexam.genruntimeconfig.cache
 C:\Users\andre\OneDrive\Skrivebord\git clones\DnDProject\DndReexam\obj\Debug\net9.0\ref\DndReexam.dll
+C:\Users\andre\OneDrive\Skrivebord\git clones\DnDProject\DndReexam\obj\Debug\net9.0\scopedcss\Components\Pages\LandingPage.razor.rz.scp.css
+C:\Users\andre\OneDrive\Skrivebord\git clones\DnDProject\DndReexam\obj\Debug\net9.0\compressed\p0c60rjn9l-984rpl8gsx.gz
+C:\Users\andre\OneDrive\Skrivebord\git clones\DnDProject\DndReexam\obj\Debug\net9.0\compressed\rbhv97jegs-984rpl8gsx.gz
