@@ -1,0 +1,97 @@
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
+using Microsoft.EntityFrameworkCore;
+using Backend.Data;
+using Backend.Models;
+using System.Security.Cryptography;
+using System.Text;
+
+namespace Backend.Services
+{
+    public class EmployeeService(ApplicationDbContext _context)
+    {
+        // Get all employees
+        public async Task<List<Employee>> GetAllEmployeesAsync()
+        {
+            return await _context.Employees.ToListAsync();
+        }
+
+        // Get employee by ID
+        public async Task<Employee?> GetEmployeeByIdAsync(int id)
+        {
+            return await _context.Employees.FindAsync(id);
+        }
+
+        // Get employee by Email (for login)
+        public async Task<Employee?> GetEmployeeByEmailAsync(string email)
+        {
+            return await _context.Employees.FirstOrDefaultAsync(e => e.Email == email);
+        }
+
+        // Add a new employee
+        public async Task<Employee> AddEmployeeAsync(Employee employee, string password)
+        {
+            employee.PasswordHash = HashPassword(password);
+            _context.Employees.Add(employee);
+            await _context.SaveChangesAsync();
+            return employee;
+        }
+
+        // Update employee details
+        public async Task<Employee?> UpdateEmployeeAsync(Employee employee)
+        {
+            var existingEmployee = await _context.Employees.FindAsync(employee.Id);
+            if (existingEmployee == null) return null;
+
+            existingEmployee.FirstName = employee.FirstName;
+            existingEmployee.LastName = employee.LastName;
+            existingEmployee.Email = employee.Email;
+            existingEmployee.Role = employee.Role;
+            existingEmployee.DateOfBirth = employee.DateOfBirth;
+            existingEmployee.HireDate = employee.HireDate;
+
+            await _context.SaveChangesAsync();
+            return existingEmployee;
+        }
+
+        // Delete an employee
+        public async Task<bool> DeleteEmployeeAsync(int id)
+        {
+            var employee = await _context.Employees.FindAsync(id);
+            if (employee == null) return false;
+
+            _context.Employees.Remove(employee);
+            await _context.SaveChangesAsync();
+            return true;
+        }
+
+        // Authenticate Employee (Login)
+        public async Task<Employee?> AuthenticateEmployeeAsync(string email, string password)
+        {
+            var employee = await _context.Employees.FirstOrDefaultAsync(e => e.Email == email);
+            if (employee == null || !VerifyPassword(password, employee.PasswordHash))
+                return null; // Return null if authentication fails
+
+            return employee;
+        }
+
+        // Hash Password (for security)
+        private string HashPassword(string password)
+        {
+            using (var sha256 = SHA256.Create())
+            {
+                byte[] bytes = sha256.ComputeHash(Encoding.UTF8.GetBytes(password));
+                return Convert.ToBase64String(bytes);
+            }
+        }
+
+        // Verify Password
+        private bool VerifyPassword(string password, string storedHash)
+        {
+            string hashedPassword = HashPassword(password);
+            return hashedPassword == storedHash;
+        }
+    }
+}
