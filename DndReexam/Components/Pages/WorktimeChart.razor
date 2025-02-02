@@ -1,0 +1,37 @@
+@page "/worktime-chart"
+@using DndReexam.Services
+@inject WorktimeService WorktimeService
+@using MudBlazor
+
+<MudCard>
+    <MudCardContent>
+        <MudText Typo="Typo.h6">Worktime Summary</MudText>
+        <MudChart ChartType="ChartType.Bar" Labels="@chartLabels" Ticks="8" InputData="@chartData" />
+    </MudCardContent>
+</MudCard>
+
+@if (worktimeSummary == null)
+{
+    <MudProgressCircular Indeterminate="true" />
+}
+else if (worktimeSummary.Count == 0)
+{
+    <p>No data available.</p>
+}
+
+@code {
+    private List<WorktimeSummary>? worktimeSummary;
+    private string[] chartLabels = Array.Empty<string>();
+    private double[] chartData = Array.Empty<double>();
+    private int employeeId = 1; // Example employee ID, make this dynamic later
+
+    protected override async Task OnInitializedAsync()
+    {
+        worktimeSummary = await WorktimeService.GetWorktimeSummaryAsync(employeeId);
+        if (worktimeSummary != null && worktimeSummary.Count > 0)
+        {
+            chartLabels = worktimeSummary.Select(x => x.Date).ToArray();
+            chartData = worktimeSummary.Select(x => x.TotalHours).ToArray();
+        }
+    }
+}

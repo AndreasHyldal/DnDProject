@@ -1,5 +1,7 @@
 using Backend.Models;
 using Microsoft.EntityFrameworkCore;
+using System.Security.Cryptography;
+using System.Text;
 
 namespace Backend.Data;
 public class ApplicationDbContext : DbContext
@@ -11,6 +13,57 @@ public class ApplicationDbContext : DbContext
 
     public DbSet<Worktime> Worktimes { get; set; }
     public DbSet<Employee> Employees { get; set; }
+    protected override void OnModelCreating(ModelBuilder modelBuilder)
+    {
+        base.OnModelCreating(modelBuilder);
+
+        // ✅ Seed Employee (Test User)
+        var testEmployee = new Employee
+        {
+            Id = 1,
+            FirstName = "John",
+            LastName = "Doe",
+            Email = "john.doe@example.com",
+            PasswordHash = HashPassword("Test123!"), // Hash the password
+            Role = "Employee",
+            DateOfBirth = new DateTime(1990, 5, 15),
+            HireDate = new DateTime(2024, 2, 1) // ✅ Static value instead of DateTime.UtcNow
+        };
+
+        // ✅ Seed Worktime Entries (Only EmployeeId, No Navigation Property)
+        var worktimes = new List<Worktime>
+        {
+            new Worktime
+            {
+                Id = 1,
+                EmployeeId = testEmployee.Id, // ✅ Only use FK, don't set Employee
+                Start = new DateTime(2024, 2, 1, 9, 0, 0),
+                End = new DateTime(2024, 2, 1, 17, 0, 0),
+                Task = "Worked on frontend UI"
+            },
+            new Worktime
+            {
+                Id = 2,
+                EmployeeId = testEmployee.Id, // ✅ Only use FK, don't set Employee
+                Start = new DateTime(2024, 2, 2, 10, 0, 0),
+                End = new DateTime(2024, 2, 2, 16, 0, 0),
+                Task = "Bug fixes and testing"
+            }
+        };
+
+        modelBuilder.Entity<Employee>().HasData(testEmployee);
+        modelBuilder.Entity<Worktime>().HasData(worktimes); // ✅ No Employee object here
+    }
+
+        private static string HashPassword(string password)
+        {
+            using (var sha256 = SHA256.Create())
+            {
+                byte[] bytes = sha256.ComputeHash(Encoding.UTF8.GetBytes(password));
+                return Convert.ToBase64String(bytes);
+            }
+        }
+
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
     {
         if (!optionsBuilder.IsConfigured)

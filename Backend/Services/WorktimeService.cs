@@ -69,5 +69,29 @@ namespace Backend.Services
             await _context.SaveChangesAsync();
             return true;
         }
+
+        // Get Worktimes for a Specific Employee
+        public async Task<List<Worktime>> GetWorktimesByEmployeeIdAsync(int employeeId)
+        {
+            return await _context.Worktimes
+                .Where(w => w.EmployeeId == employeeId)
+                .OrderBy(w => w.Start) // Order by start time
+                .ToListAsync();
+        }
+
+        // Get Worktime Sum Per Day (For Bar Chart)
+        public async Task<List<object>> GetWorktimeSummaryByDayAsync(int employeeId)
+        {
+            return await _context.Worktimes
+                .Where(w => w.EmployeeId == employeeId)
+                .GroupBy(w => w.Start.Date)
+                .Select(g => new
+                {
+                    Date = g.Key,
+                    TotalHours = g.Sum(w => (w.End - w.Start).TotalHours)
+                })
+                .OrderBy(g => g.Date)
+                .ToListAsync<object>(); // Return as object list for serialization
+        }
     }
 }
