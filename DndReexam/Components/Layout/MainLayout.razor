@@ -1,6 +1,12 @@
 ﻿@inherits LayoutComponentBase
+@using DndReexam.Services
+@inject WorktimeService WorktimeService
+@using MudBlazor
 
 <div class="page">
+    <MudThemeProvider />
+    <MudDialogProvider />
+    <MudSnackbarProvider />
     <div class="sidebar">
         <NavMenu />
     </div>

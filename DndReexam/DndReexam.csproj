@@ -18,4 +18,8 @@
     <Folder Include="Layout\" />
   </ItemGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\Backend\Backend.csproj" />
+  </ItemGroup>
+
 </Project>

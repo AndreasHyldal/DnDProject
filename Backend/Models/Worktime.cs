@@ -14,7 +14,7 @@ namespace Backend.Models
         public int EmployeeId { get; set; }
         
         [Required]
-        public required Employee Employee { get; set; }  // Navigation property
+        public Employee? Employee { get; set; } 
 
         [Required]
         public DateTime Start { get; set; }
@@ -23,7 +23,7 @@ namespace Backend.Models
         public DateTime End { get; set; }
 
         [Required]
-        [MaxLength(500)] // Adjust the length as needed
+        [MaxLength(500)] 
         public string Task { get; set; } = String.Empty;
     }
 }
