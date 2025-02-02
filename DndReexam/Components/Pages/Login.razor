@@ -1,66 +1,70 @@
 @page "/login"
-@using DndReexam.Models
-@using DndReexam.Services
-@inject IAuthService AuthService
-@inject NavigationManager NavigationManager
+@using DndReexam.Components.Layout
+@rendermode @(new InteractiveServerRenderMode(prerender: true))
+@layout LoginLayout
+@inject HttpClient Http
+@inject NavigationManager Navigation
 @inject ILocalStorageService LocalStorage
 
-<EditForm Model="@loginModel" OnValidSubmit="@HandleLogin">
-    <DataAnnotationsValidator />
-    <ValidationSummary />
+<h3>Login</h3>
 
-    <div class="form-group">
-        <label for="email">Email</label>
-        <InputText id="email" class="form-control" @bind-Value="loginModel.Email" placeholder="Enter your email" />
-    </div>
-
-    <div class="form-group mt-3">
-        <label for="password">Password</label>
-        <InputText id="password" class="form-control" type="password" @bind-Value="loginModel.Password" placeholder="Enter your password" />
-    </div>
-
-    <div class="text-danger">@errorLabel</div>
-
-    <button type="submit" class="btn btn-primary mt-3">Login</button>
-</EditForm>
-
-@code {
-    private PersonBaseDTO loginModel { get; set; } = new PersonBaseDTO
-    {
-        Email = string.Empty,
-        Password = string.Empty
-    };
-
-    private string errorLabel = "";
-
-    private async Task HandleLogin()
+@if (!string.IsNullOrEmpty(ErrorMessage))
 {
-    errorLabel = "";
-
-    try
-    {
-        // Call AuthService to validate login and retrieve the JWT token
-        var loginResponse = await AuthService.LoginAsync(loginModel.Email, loginModel.Password);
-
-        if (!string.IsNullOrEmpty(loginResponse?.Token))
-        {
-            // Store the token and user role in local storage
-            await LocalStorage.SetItemAsync("authToken", loginResponse.Token);
-            await LocalStorage.SetItemAsync("userRole", loginResponse.Role);
-
-            // Redirect to the homepage
-            NavigationManager.NavigateTo("/home");
-        }
-        else
-        {
-            errorLabel = "Invalid email or password. Please try again.";
-        }
-    }
-    catch (Exception ex)
-    {
-        Console.WriteLine($"Login error: {ex.Message}");
-        errorLabel = "An error occurred during login. Please try again.";
-    }
+    <div class="alert alert-danger">@ErrorMessage</div>
 }
 
+<div class="form-group">
+    <label>Email:</label>
+    <input type="email" @bind="loginModel.Email" class="form-control" />
+
+    <label>Password:</label>
+    <input type="password" @bind="loginModel.Password" class="form-control" />
+
+    <button @onclick="HandleLogin" class="btn btn-primary">Login</button>
+</div>
+
+@code {
+    private LoginRequest loginModel = new();
+    private string? ErrorMessage;
+
+    private async Task HandleLogin()
+    {
+        ErrorMessage = null;
+
+        try
+        {
+            var response = await Http.PostAsJsonAsync("api/auth/login", loginModel);
+
+            if (response.IsSuccessStatusCode)
+            {
+                var result = await response.Content.ReadFromJsonAsync<AuthResponse>();
+                
+                if (result != null && !string.IsNullOrEmpty(result.Token))
+                {
+                    await LocalStorage.SetItemAsync("jwt_token", result.Token);
+                    Navigation.NavigateTo("/home");
+                }
+            }
+            else
+            {
+                ErrorMessage = "Invalid email or password.";
+            }
+        }
+        catch (Exception ex)
+        {   
+            Console.WriteLine($"ex {ex.Message}");
+            ErrorMessage = "Error connecting to server.";
+        }
+    }
+
+    private class LoginRequest
+    {
+        public string Email { get; set; } = string.Empty;
+        public string Password { get; set; } = string.Empty;
+    }
+
+    private class AuthResponse
+    {
+        public string Token { get; set; } = string.Empty;
+    }
 }

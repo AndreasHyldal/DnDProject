@@ -20,10 +20,7 @@ builder.Services.AddBlazoredLocalStorage();
 
 // Register AuthService and HttpClient
 builder.Services.AddScoped<IAuthService, AuthService>();
-builder.Services.AddHttpClient<IAuthService, AuthService>(client =>
-{
-    client.BaseAddress = new Uri("http://localhost:5147"); // Ensure this is the correct backend URL
-});
+builder.Services.AddScoped(sp => new HttpClient { BaseAddress = new Uri("http://localhost:5147/") });
 
 var app = builder.Build();
 
