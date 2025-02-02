@@ -1,82 +1,66 @@
 @page "/login"
-@using DndReexam.Components.Layout
-@layout LoginLayout
-@using Blazored.LocalStorage
-@using Microsoft.AspNetCore.Components.Authorization
-@using DndReexam.Services
 @using DndReexam.Models
-@namespace DndReexam.Components.Pages
-@inject IHttpClientFactory ClientFactory
-@inject ILocalStorageService LocalStorage
-@inject AuthenticationStateProvider AuthenticationStateProvider
-@inject NavigationManager NavigationManager
+@using DndReexam.Services
 @inject IAuthService AuthService
+@inject NavigationManager NavigationManager
+@inject ILocalStorageService LocalStorage
 
-<div class="d-flex justify-content-center align-items-center vh-100">
-    <div class="p-4" style="width: 100%; max-width: 400px;">
+<EditForm Model="@loginModel" OnValidSubmit="@HandleLogin">
+    <DataAnnotationsValidator />
+    <ValidationSummary />
 
-        <div style="display: flex; justify-content: center;">
-            <img src="AA-Company-Logo.jpg" alt="AA Company Logo">
-        </div>
-        
-        <h2 class="text-center mb-4">Login</h2>
-
-        <EditForm Model="@loginModel" OnValidSubmit="@HandleLogin" FormName="loginForm">
-            <DataAnnotationsValidator />
-            <ValidationSummary />
-
-            <!-- Employee ID Input -->
-            <div class="form-group">
-                <label for="employeeId">Employee ID</label>
-                <InputText id="employeeId" class="form-control" @bind-Value="loginModel.EmployeeId" placeholder="(e.g. 123456)" style="font-size: 18px;" />
-            </div>
-
-            <!-- Password Input -->
-            <div class="form-group mt-3">
-                <label for="password">Password</label>
-                <InputText id="password" class="form-control" type="password" @bind-Value="loginModel.Password" placeholder="(e.g. 1234)" style="font-size: 18px;" />
-            </div>
-
-            <!-- Error Label -->
-            <div class="text-danger">@errorLabel</div>
-
-            <!-- Submit Button -->
-            <button type="submit" class="btn btn-primary w-100 mt-4" style="font-size: 20px;">Login</button>
-        </EditForm>
+    <div class="form-group">
+        <label for="email">Email</label>
+        <InputText id="email" class="form-control" @bind-Value="loginModel.Email" placeholder="Enter your email" />
     </div>
-</div>
 
+    <div class="form-group mt-3">
+        <label for="password">Password</label>
+        <InputText id="password" class="form-control" type="password" @bind-Value="loginModel.Password" placeholder="Enter your password" />
+    </div>
+
+    <div class="text-danger">@errorLabel</div>
+
+    <button type="submit" class="btn btn-primary mt-3">Login</button>
+</EditForm>
 
 @code {
-    [SupplyParameterFromForm]
-    private PersonBaseDTO loginModel { get; set; } = new PersonBaseDTO();
+    private PersonBaseDTO loginModel { get; set; } = new PersonBaseDTO
+    {
+        Email = string.Empty,
+        Password = string.Empty
+    };
+
     private string errorLabel = "";
 
-    protected override async Task OnInitializedAsync()
-    {
-        var authenticationState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
-        var user = authenticationState.User;
-
-        if (user.Identity != null && user.Identity.IsAuthenticated)
-        {
-            NavigationManager.NavigateTo("/home");
-        }
-    }
-
     private async Task HandleLogin()
-    { 
-        errorLabel = "";
+{
+    errorLabel = "";
 
-        try
+    try
+    {
+        // Call AuthService to validate login and retrieve the JWT token
+        var loginResponse = await AuthService.LoginAsync(loginModel.Email, loginModel.Password);
+
+        if (!string.IsNullOrEmpty(loginResponse?.Token))
         {
-            await AuthService.LoginAsync(loginModel.EmployeeId, loginModel.Password);
+            // Store the token and user role in local storage
+            await LocalStorage.SetItemAsync("authToken", loginResponse.Token);
+            await LocalStorage.SetItemAsync("userRole", loginResponse.Role);
+
+            // Redirect to the homepage
             NavigationManager.NavigateTo("/home");
         }
-        catch (Exception e)
+        else
         {
-            Console.WriteLine(e);
-            errorLabel = $"Error: {e.Message}";
+            errorLabel = "Invalid email or password. Please try again.";
         }
     }
-    
+    catch (Exception ex)
+    {
+        Console.WriteLine($"Login error: {ex.Message}");
+        errorLabel = "An error occurred during login. Please try again.";
+    }
+}
+
 }

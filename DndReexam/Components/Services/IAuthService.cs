@@ -6,7 +6,7 @@ namespace DndReexam.Services
     public interface IAuthService
     {
         
-        Task<string?> LoginAsync(string EmployeeId, string password);
+        Task<string?> LoginAsync(string Email, string password);
 
         Task<bool> RegisterAsync(PersonBaseDTO user);
     }

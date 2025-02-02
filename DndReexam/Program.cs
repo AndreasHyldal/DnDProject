@@ -9,13 +9,21 @@ var builder = WebApplication.CreateBuilder(args);
 // Add services to the container
 builder.Services.AddRazorComponents()
     .AddInteractiveServerComponents();
+
+// Register WorktimeService
 builder.Services.AddScoped<WorktimeService>();
 
+// Add UI frameworks and local storage service
 builder.Services.AddHxServices();
 builder.Services.AddMudServices();
-builder.Services.AddBlazoredLocalStorage(); // Register Blazored.LocalStorage
-builder.Services.AddScoped<IAuthService, AuthService>(); // Register AuthService
-builder.Services.AddHttpClient(); // Register HttpClient
+builder.Services.AddBlazoredLocalStorage();
+
+// Register AuthService and HttpClient
+builder.Services.AddScoped<IAuthService, AuthService>();
+builder.Services.AddHttpClient<IAuthService, AuthService>(client =>
+{
+    client.BaseAddress = new Uri("http://localhost:5147"); // Ensure this is the correct backend URL
+});
 
 var app = builder.Build();
 
@@ -23,8 +31,7 @@ var app = builder.Build();
 if (!app.Environment.IsDevelopment())
 {
     app.UseExceptionHandler("/Error", createScopeForErrors: true);
-    // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
-    app.UseHsts();
+    app.UseHsts(); // The default HSTS value is 30 days. You may want to change this for production scenarios.
 }
 
 app.UseHttpsRedirection();
