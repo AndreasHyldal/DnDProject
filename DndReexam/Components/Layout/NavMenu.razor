@@ -40,7 +40,6 @@
 	@* protected override async Task OnInitializedAsync() *@
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
-		Console.WriteLine("inside of onadterrenderasync");
 		if (firstRender && !hasCheckedRole)
         {
             var role = await AuthService.GetUserRoleAsync();

@@ -17,9 +17,9 @@ builder.Services.AddScoped<WorktimeService>();
 builder.Services.AddScoped<AuthService>();
 
 // Add UI frameworks and local storage service
-builder.Services.AddHxServices();
 builder.Services.AddMudServices();
 builder.Services.AddBlazoredLocalStorage();
+builder.Services.AddHxServices();
 
 // Register AuthService and HttpClient
 builder.Services.AddScoped(sp => new HttpClient { BaseAddress = new Uri("http://localhost:5147/") });
@@ -36,8 +36,8 @@ if (!app.Environment.IsDevelopment())
 app.UseHttpsRedirection();
 app.UseAntiforgery();
 
-app.MapStaticAssets();
 app.MapRazorComponents<App>()
     .AddInteractiveServerRenderMode();
+app.MapStaticAssets();
 
 app.Run();

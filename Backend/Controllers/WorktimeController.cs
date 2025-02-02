@@ -15,21 +15,16 @@ namespace Backend.Controllers
         public async Task<ActionResult<List<Worktime>>> GetMyWorktimes()
         {
             // 1) Get user ID from token
-            string userIdString = User.FindFirst("sub")?.Value 
-                                ?? User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            string userIdString = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            // string userRole = User.FindFirst(ClaimTypes.Role)?.Value;
             Console.WriteLine(userIdString);
             if (string.IsNullOrEmpty(userIdString))
             {
                 return Unauthorized();
             }
 
-            if (!int.TryParse(userIdString, out int userId))
-            {
-                return Unauthorized();
-            }
-
             // 2) Retrieve only that user’s worktimes
-            var worktimes = await _worktimeService.GetWorktimesByEmployeeIdAsync(userId);
+            var worktimes = await _worktimeService.GetWorktimesByEmployeeIdAsync(userIdString);
             if (worktimes == null)
             {
                 return NotFound(); 
@@ -38,18 +33,68 @@ namespace Backend.Controllers
             return Ok(worktimes);
         }
 
-        [HttpGet("employee/{employeeId}")]
-        public async Task<ActionResult<List<Worktime>>> GetByEmployeeId(int employeeId)
+        [Authorize]
+        [HttpGet("employee/{day}")]
+        public async Task<ActionResult<List<Worktime>>> GetMyWorktimes(string day)
         {
-            var worktimes = await _worktimeService.GetWorktimesByEmployeeIdAsync(employeeId);
+            // 1) Get user ID from token
+            string userIdString = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            // string userRole = User.FindFirst(ClaimTypes.Role)?.Value;
+            if (string.IsNullOrEmpty(userIdString))
+            {
+                return Unauthorized();
+            }
+
+            // 2) Retrieve only that user’s worktimes
+            var worktimes = await _worktimeService.GetWorktimesByEmployeeIdAndDayAsync(userIdString, day);
+            if (worktimes == null)
+            {
+                return NotFound(); 
+            }
+
+            return Ok(worktimes);
+        }
+
+
+
+
+        [HttpGet("employee/{employeeId}")]
+        public async Task<ActionResult<List<Worktime>>> GetByEmployeeId(string employeeEmail)
+        {
+            var worktimes = await _worktimeService.GetWorktimesByEmployeeIdAsync(employeeEmail);
             return (worktimes == null) ? NotFound() : Ok(worktimes);
         }
 
+        [Authorize]
+        [HttpGet("summary")]
+        public async Task<ActionResult<List<object>>> GetMyWorktimesByDay()
+        {
+            // 1) Get user ID from token
+            string userIdString = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            // string userRole = User.FindFirst(ClaimTypes.Role)?.Value;
+            Console.WriteLine(userIdString);
+            if (string.IsNullOrEmpty(userIdString))
+            {
+                return Unauthorized();
+            }
+
+
+            // 2) Retrieve only that user’s worktimes
+            var summary = await _worktimeService.GetWorktimeSummaryByDayAsync(userIdString);
+            if (summary == null)
+            {
+                return NotFound(); 
+            }
+
+            return Ok(summary);
+        }
+
+
         //  Get Worktime Sum Per Day (For Bar Chart)
         [HttpGet("summary/{employeeId}")]
-        public async Task<ActionResult<List<object>>> GetWorktimeSummaryByDay(int employeeId)
+        public async Task<ActionResult<List<object>>> GetWorktimeSummaryByDay(string employeeEmail)
         {
-            var summary = await _worktimeService.GetWorktimeSummaryByDayAsync(employeeId);
+            var summary = await _worktimeService.GetWorktimeSummaryByDayAsync(employeeEmail);
             return Ok(summary);
         }
 

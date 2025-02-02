@@ -1,6 +1,7 @@
 using Microsoft.EntityFrameworkCore;
 using Backend.Data;
 using Backend.Models;
+using System.Globalization;
 
 namespace Backend.Services
 {
@@ -66,21 +67,35 @@ namespace Backend.Services
             return true;
         }
 
+        public async Task<List<Worktime>> GetWorktimesByEmployeeIdAndDayAsync(string employeeEmail, string day)
+        {
+            // Parse the input string into a DateTime
+            DateTime parsedDate = DateTime.ParseExact(day, "yyyy-MM-dd", CultureInfo.InvariantCulture);
+            DateTime nextDay = parsedDate.AddDays(1);
+
+            return await _context.Worktimes
+                .Where(w => w.Employee.Email == employeeEmail 
+                        && w.Start >= parsedDate 
+                        && w.Start < nextDay)
+                .OrderBy(w => w.Start) // Order by start time
+                .ToListAsync();
+        }
+
         // Get Worktimes for a Specific Employee
-        public async Task<List<Worktime>> GetWorktimesByEmployeeIdAsync(int employeeId)
+        public async Task<List<Worktime>> GetWorktimesByEmployeeIdAsync(string employeeEmail)
         {
             return await _context.Worktimes
-                .Where(w => w.EmployeeId == employeeId)
+                .Where(w => w.Employee.Email == employeeEmail)
                 .OrderBy(w => w.Start) // Order by start time
                 .ToListAsync();
         }
 
         // Get Worktime Sum Per Day (For Bar Chart)
-        public async Task<List<object>> GetWorktimeSummaryByDayAsync(int employeeId)
+        public async Task<List<object>> GetWorktimeSummaryByDayAsync(string employeeEmail)
         {
             var worktimes = await _context.Worktimes
-                .Where(w => w.EmployeeId == employeeId)
-                .ToListAsync(); // ✅ Fetch data first (Executes SQL)
+                .Where(w => w.Employee.Email == employeeEmail)
+                    .ToListAsync(); // ✅ Fetch data first (Executes SQL)
 
             var summary = worktimes
                 .GroupBy(w => w.Start.Date) // ✅ Perform grouping in memory

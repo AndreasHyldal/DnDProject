@@ -3,10 +3,11 @@
 @inject AuthService AuthService
 @inject IJSRuntime JS
 @using MudBlazor
+@rendermode @(new InteractiveServerRenderMode(prerender: false))
 
 <PageTitle>Home</PageTitle>
 
-@if (worktimeSummary == null || worktimeRaw == null)
+@if (worktimeSummary == null || worktimeRaw == null || todayWorktimeRaw == null)
 {
     <MudProgressCircular Indeterminate="true" />
 }
@@ -23,7 +24,27 @@ else
             />
         </div>
         <div class="first-row side-content">
-            Sidebar (20%)
+            <h3><b>Today:</b></h3>
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th aria-label="Start time">Start</th>
+                        <th aria-label="End time">End</th>
+                        <th>Task</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var workRecord in worktimeRaw)
+                    {
+                        <tr>
+                            <td>@(workRecord.Start.ToString("HH:mm"))</td>
+                            <td>@(workRecord.End.ToString("HH:mm"))</td>
+                            <td>@workRecord.Task</td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+
         </div>
 
         <!-- Second Row -->
@@ -50,26 +71,29 @@ else
                 </tbody>
             </table>
         </div>
-    </div>
+        </div>
 }
+
 
 @code {
     private List<WorktimeSummary>? worktimeSummary;
     private List<WorktimeRaw>? worktimeRaw;
-    private int employeeId = 1;
+    private List<WorktimeRaw>? todayWorktimeRaw;
     private string[] chartLabels = Array.Empty<string>();
     private List<ChartSeries> chartSeries = new();
     private string token;
+    private bool hasCheckedUser = false;
+    private const string TODAY = "2024-02-03";
 
-
-    @* protected override async Task OnAfterRenderAsync(bool firstRender)
+    protected override async Task OnAfterRenderAsync(bool firstRender)
     {
-        if (firstRender)
+        if (firstRender && !hasCheckedUser)
         {
             token = await AuthService.GetTokenAsync();
-            worktimeSummary = await WorktimeService.GetWorktimeSummaryAsync(employeeId);
-            worktimeRaw = await WorktimeService.GetWorktimeRawAsync(employeeId, token);
-
+            worktimeSummary = await WorktimeService.GetWorktimeSummaryAsync(token);
+            worktimeRaw = await WorktimeService.GetWorktimeRawAsync(token);
+            todayWorktimeRaw = await WorktimeService.GetWorktimeRawTodayAsync(token, TODAY);
+			Console.WriteLine(token);
             // Now retrieve worktime data using the token
 
             if (worktimeSummary is { Count: > 0 })
@@ -89,11 +113,13 @@ else
                     }
                 };
             }
+            hasCheckedUser = true;
+            StateHasChanged(); // Re-render UI after checking role
 
-            await base.OnAfterRenderAsync(firstRender);
-    } *@
+    }
     
 
         
     }
 
+}
