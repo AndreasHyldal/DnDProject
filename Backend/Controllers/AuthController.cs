@@ -45,5 +45,53 @@ namespace Backend.Controllers
             var token = _tokenService.GenerateToken(employee);
             return Ok(new { token });
         }
+
+        /// <summary>
+        /// Generates the JWT token containing the employee's Email and Role
+        /// </summary>
+        /// <param name="employee">The authenticated employee</param>
+        /// <returns>Signed JWT token as a string</returns>
+        private string GenerateJwtToken(Employee employee)
+        {
+            // Retrieve the signing key from configuration
+            var issuer = _configuration["Jwt:Issuer"];
+            var audience = _configuration["Jwt:Audience"];
+            var key = _configuration["Jwt:Key"]
+                ?? throw new InvalidOperationException("JWT Key is missing in configuration.");
+
+            // Create security key and signing credentials
+            var securityKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(key));
+            var credentials = new SigningCredentials(securityKey, SecurityAlgorithms.HmacSha256);
+
+            // Add standard claims plus the role and ID claims.
+            var claims = new[]
+            {
+                new Claim(JwtRegisteredClaimNames.Sub, employee.Email),
+                new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
+                new Claim(ClaimTypes.Role, employee.Role ?? "User"),
+                new Claim(ClaimTypes.NameIdentifier, employee.Id.ToString())
+            };
+
+            // Create the token
+            var token = new JwtSecurityToken(
+                issuer,
+                audience,
+                claims,
+                expires: DateTime.UtcNow.AddHours(1), // token validity (example: 1 hour)
+                signingCredentials: credentials
+            );
+
+            // Return the serialized token
+            return new JwtSecurityTokenHandler().WriteToken(token);
+        }    
+    }
+
+    /// <summary>
+    /// Simple DTO to receive login credentials
+    /// </summary>
+    public class LoginRequest
+    {
+        public string Email { get; set; } = String.Empty;
+        public string Password { get; set; } = String.Empty;
     }
 }
