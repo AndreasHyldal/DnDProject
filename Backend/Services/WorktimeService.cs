@@ -82,16 +82,21 @@ namespace Backend.Services
         // Get Worktime Sum Per Day (For Bar Chart)
         public async Task<List<object>> GetWorktimeSummaryByDayAsync(int employeeId)
         {
-            return await _context.Worktimes
+            var worktimes = await _context.Worktimes
                 .Where(w => w.EmployeeId == employeeId)
-                .GroupBy(w => w.Start.Date)
+                .ToListAsync(); // ✅ Fetch data first (Executes SQL)
+
+            var summary = worktimes
+                .GroupBy(w => w.Start.Date) // ✅ Perform grouping in memory
                 .Select(g => new
                 {
                     Date = g.Key,
-                    TotalHours = g.Sum(w => (w.End - w.Start).TotalHours)
+                    TotalHours = g.Sum(w => (w.End - w.Start).TotalHours) // ✅ Now it works!
                 })
                 .OrderBy(g => g.Date)
-                .ToListAsync<object>(); // Return as object list for serialization
+                .ToList();
+
+            return summary.Cast<object>().ToList(); // ✅ Ensure correct return type
         }
     }
 }
