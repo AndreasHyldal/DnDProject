@@ -13,6 +13,9 @@ builder.Services.AddRazorComponents()
 // Register WorktimeService
 builder.Services.AddScoped<WorktimeService>();
 
+// Register EmployeeService
+builder.Services.AddScoped<EmployeeService>();
+
 // Add UI frameworks and local storage service
 builder.Services.AddHxServices();
 builder.Services.AddMudServices();

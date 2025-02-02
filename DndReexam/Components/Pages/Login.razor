@@ -42,19 +42,19 @@
         // Call AuthService to validate login and retrieve the JWT token
         var loginResponse = await AuthService.LoginAsync(loginModel.Email, loginModel.Password);
 
-        if (!string.IsNullOrEmpty(loginResponse?.Token))
-        {
+       // if (!string.IsNullOrEmpty(loginResponse?.Token))
+       // {
             // Store the token and user role in local storage
-            await LocalStorage.SetItemAsync("authToken", loginResponse.Token);
-            await LocalStorage.SetItemAsync("userRole", loginResponse.Role);
+       //     await LocalStorage.SetItemAsync("authToken", loginResponse.Token);
+       //     await LocalStorage.SetItemAsync("userRole", loginResponse.Role);
 
-            // Redirect to the homepage
-            NavigationManager.NavigateTo("/home");
-        }
-        else
-        {
-            errorLabel = "Invalid email or password. Please try again.";
-        }
+       //      Redirect to the homepage
+       //     NavigationManager.NavigateTo("/home");
+       // }
+       // else
+       // {
+       //     errorLabel = "Invalid email or password. Please try again.";
+       // }
     }
     catch (Exception ex)
     {

@@ -8,11 +8,10 @@
     <MudCardContent>
         <MudText Typo="Typo.h6">Worktime Summary</MudText>
         <MudChart ChartType="ChartType.Bar"
-          InputLabels="@Labels"
-          ChartSeries="@Series"
-          @* Width="100%"
-          Height="350px"  *@
-        />
+                  InputLabels="@Labels"
+                  ChartSeries="@Series"
+                  Width="@Width"
+                  Height="@Height" />
     </MudCardContent>
 </MudCard>
 
@@ -22,4 +21,3 @@
     [Parameter] public string Width { get; set; } = "100%";
     [Parameter] public string Height { get; set; } = "350px";
 }
-
