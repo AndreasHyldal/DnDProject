@@ -24,7 +24,7 @@ namespace DndReexam.Services
             return response.IsSuccessStatusCode;
         }
 
-        public async Task<bool> AddEmployeeAsync(Employee employee)
+        public async Task<bool> AddEmployeeAsync(Employee employee, string password)
         {
             var response = await _httpClient.PostAsJsonAsync("http://localhost:5147/api/employees", employee);
             return response.IsSuccessStatusCode;
