@@ -67,17 +67,18 @@ namespace Backend.Controllers
             var audience = _configuration["Jwt:Audience"];
             var key = _configuration["Jwt:Key"]
                 ?? throw new InvalidOperationException("JWT Key is missing in configuration.");
-            
+
             // Create security key and signing credentials
             var securityKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(key));
             var credentials = new SigningCredentials(securityKey, SecurityAlgorithms.HmacSha256);
 
-            // Add standard claims + role claim
+            // Add standard claims plus the role and ID claims.
             var claims = new[]
             {
                 new Claim(JwtRegisteredClaimNames.Sub, employee.Email),
                 new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
-                new Claim(ClaimTypes.Role, employee.Role ?? "User")  // Include role in JWT
+                new Claim(ClaimTypes.Role, employee.Role ?? "User"),
+                new Claim(ClaimTypes.NameIdentifier, employee.Id.ToString())
             };
 
             // Create the token
@@ -91,7 +92,7 @@ namespace Backend.Controllers
 
             // Return the serialized token
             return new JwtSecurityTokenHandler().WriteToken(token);
-        }
+        }    
     }
 
     /// <summary>
