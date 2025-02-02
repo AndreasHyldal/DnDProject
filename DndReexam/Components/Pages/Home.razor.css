@@ -1,7 +1,7 @@
 /* Grid Container */
 .grid-container {
     display: grid;
-    grid-template-columns: 80% 20%; /* First row: 80% main content, 20% sidebar */
+    grid-template-columns: 70% 30%; /* First row: 80% main content, 20% sidebar */
     grid-template-rows: auto auto; /* Two rows: First row auto, second row auto */
     gap: 10px; /* Spacing between grid items */
     padding: 10px;

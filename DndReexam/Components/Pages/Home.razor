@@ -1,18 +1,30 @@
 ﻿@page "/home"
+@inject WorktimeService WorktimeService
+@inject IJSRuntime JS
+@using MudBlazor
 
 <PageTitle>Home</PageTitle>
 
-@if (forecasts == null)
+@if (worktimeSummary == null || worktimeRaw == null)
 {
-    <p><em>Loading...</em></p>
+    <MudProgressCircular Indeterminate="true" />
 }
+@* else if (worktimeSummary.Count == 0) *@
 else
 {
     <div class="grid-container">
-    <WorktimeChart/>
 
-    <div class="first-row main-content">Main Content (80%)</div>
-    <div class="first-row side-content">Sidebar (20%)</div>
+    <div class="first-row main-content">
+        <WorktimeChart
+            Series="@chartSeries" 
+            Labels="@chartLabels" 
+            Width="100%" 
+            Height="350px"
+        />
+    </div>
+    <div class="first-row side-content">
+        Sidebar (20%)
+    </div>
 
     <!-- Second Row -->
     <div class="second-row">
@@ -20,19 +32,26 @@ else
             <thead>
                 <tr>
                     <th>Date</th>
-                    <th aria-label="Temperature in Celsius">Temp. (C)</th>
-                    <th aria-label="Temperature in Farenheit">Temp. (F)</th>
-                    <th>Summary</th>
+                    <th aria-label="Start time">Start</th>
+                    <th aria-label="End time">End</th>
+                    <th>Task</th>
                 </tr>
             </thead>
             <tbody>
-                @foreach (var forecast in forecasts)
+                @foreach (var workRecord in worktimeRaw)
                 {
                     <tr>
-                        <td>@forecast.Date.ToShortDateString()</td>
-                        <td>@forecast.TemperatureC</td>
-                        <td>@forecast.TemperatureF</td>
-                        <td>@forecast.Summary</td>
+                        <!-- Print date in YYYY-MM-DD, for example -->
+                        <td>@(workRecord.Start.ToString("yyyy-MM-dd"))</td>
+                        
+                        <!-- Print start time in HH:mm (24-hour) format -->
+                        <td>@(workRecord.Start.ToString("HH:mm"))</td>
+                        
+                        <!-- Print end time in HH:mm (24-hour) format -->
+                        <td>@(workRecord.End.ToString("HH:mm"))</td>
+                        
+                        <!-- Task as-is -->
+                        <td>@workRecord.Task</td>
                     </tr>
                 }
             </tbody>
@@ -43,28 +62,35 @@ else
 }
 
 @code {
-    private WeatherForecast[]? forecasts;
+    private List<WorktimeSummary>? worktimeSummary;
+    private List<WorktimeRaw>? worktimeRaw;
+    @* private double[] chartData = Array.Empty<double>(); *@
+    private int employeeId = 1;
+    private string[] chartLabels = Array.Empty<string>();
+    private List<ChartSeries> chartSeries = new(); // <-- store chart series here
 
     protected override async Task OnInitializedAsync()
     {
-        // Simulate asynchronous loading to demonstrate streaming rendering
-        await Task.Delay(500);
+        worktimeSummary = await WorktimeService.GetWorktimeSummaryAsync(employeeId);
+        worktimeRaw = await WorktimeService.GetWorktimeRawAsync(employeeId);
 
-        var startDate = DateOnly.FromDateTime(DateTime.Now);
-        var summaries = new[] { "Freezing", "Bracing", "Chilly", "Cool", "Mild", "Warm", "Balmy", "Hot", "Sweltering", "Scorching" };
-        forecasts = Enumerable.Range(1, 5).Select(index => new WeatherForecast
+    if (worktimeSummary is { Count: > 0 })
         {
-            Date = startDate.AddDays(index),
-            TemperatureC = Random.Shared.Next(-20, 55),
-            Summary = summaries[Random.Shared.Next(summaries.Length)]
-        }).ToArray();
+            // Labels for the X-Axis
+            chartLabels = worktimeSummary.Select(x => x.Date).ToArray();
+
+            // Build the chart series (one series for "TotalHours")
+            var totalHoursData = worktimeSummary.Select(x => x.TotalHours).ToArray();
+
+            chartSeries = new List<ChartSeries>
+            {
+                new ChartSeries
+                {
+                    Name = "Worktime",
+                    Data = totalHoursData
+                }
+            };
+        }
     }
 
-    private class WeatherForecast
-    {
-        public DateOnly Date { get; set; }
-        public int TemperatureC { get; set; }
-        public string? Summary { get; set; }
-        public int TemperatureF => 32 + (int)(TemperatureC / 0.5556);
-    }
 }
