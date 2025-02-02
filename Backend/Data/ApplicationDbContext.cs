@@ -30,6 +30,19 @@ public class ApplicationDbContext : DbContext
             HireDate = new DateTime(2024, 2, 1) // ✅ Static value instead of DateTime.UtcNow
         };
 
+        // ✅ Seed Employee (Test Admin User)
+        var adminTestEmployee = new Employee
+        {
+            Id = 1,
+            FirstName = "Jane",
+            LastName = "Doe",
+            Email = "jane.doe@example.com",
+            PasswordHash = HashPassword("Test123!"), // Hash the password
+            Role = "Admin",
+            DateOfBirth = new DateTime(1985, 10, 20),
+            HireDate = new DateTime(2023, 5, 5) // ✅ Static value instead of DateTime.UtcNow
+        };
+
         // ✅ Seed Worktime Entries (Only EmployeeId, No Navigation Property)
         var worktimes = new List<Worktime>
         {

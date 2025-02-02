@@ -22,15 +22,15 @@ namespace Backend.Models
         public string Email { get; set; } = string.Empty;
 
         [Required]
-        public string PasswordHash { get; set; } = string.Empty; // Store hashed password, not plain text
+        public string PasswordHash { get; set; } = string.Empty;
 
         [Required]
-        public string Role { get; set; } = "Employee"; // e.g., "Employee", "Manager", etc.
+        public string Role { get; set; } = "Employee";
 
         public DateTime DateOfBirth { get; set; }
 
-        public DateTime HireDate { get; set; } = DateTime.UtcNow; // Default to now
+        public DateTime HireDate { get; set; } = DateTime.UtcNow;
 
-        public List<Worktime>? Worktimes { get; set; } // Navigation property
+        public List<Worktime>? Worktimes { get; set; }
     }
 }
