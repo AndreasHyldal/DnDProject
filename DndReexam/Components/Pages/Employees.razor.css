@@ -1,0 +1,90 @@
+/* Container for the Employees page */
+.employees-container {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 20px;
+    padding: 20px;
+    background-color: #f0f4f8; /* Matches the homepage main content background */
+  }
+  
+  /* Employees Table Styling */
+  .employees-table {
+    width: 100%;
+    border-collapse: collapse;
+    background-color: #fff;
+    border-radius: 8px;
+    overflow: hidden; /* Ensures rounded corners show correctly */
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  }
+  
+  /* Table header styling */
+  .employees-table thead {
+    background-color: #dbeafe; /* Matches the sidebar background */
+  }
+  
+  .employees-table th,
+  .employees-table td {
+    padding: 12px 15px;
+    border-bottom: 1px solid #e2e8f0; /* Light border for rows */
+    text-align: left;
+  }
+  
+  .employees-table th {
+    color: #1a202c;
+    font-weight: bold;
+  }
+  
+  /* Alternate row background */
+  .employees-table tr:nth-child(even) {
+    background-color: #f7fafc;
+  }
+  
+  /* Remove bottom border from the last row */
+  .employees-table tr:last-child td {
+    border-bottom: none;
+  }
+  
+  /* Edit Form Container */
+  .edit-form-container {
+    background-color: #e2e8f0; /* Matches the homepage second row background */
+    padding: 20px;
+    border-radius: 8px;
+  }
+  
+  /* Button styling – you can adjust these if you have global button styles already */
+  .btn {
+    display: inline-block;
+    padding: 8px 16px;
+    margin: 0.25rem;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 1rem;
+  }
+  
+  .btn-primary {
+    background-color: #3b82f6; /* Blue */
+    color: #fff;
+  }
+  
+  .btn-success {
+    background-color: #10b981; /* Green */
+    color: #fff;
+  }
+  
+  .btn-secondary {
+    background-color: #6b7280; /* Gray */
+    color: #fff;
+  }
+  
+  /* Responsive adjustments */
+  @media (max-width: 768px) {
+    .employees-table th,
+    .employees-table td {
+      padding: 8px 10px;
+    }
+    .edit-form-container {
+      padding: 15px;
+    }
+  }
+  
