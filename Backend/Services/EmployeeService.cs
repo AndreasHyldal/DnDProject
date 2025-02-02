@@ -24,25 +24,25 @@ namespace Backend.Services
             _httpClient = httpClient;
         }
 
-        // ✅ Get all employees (For Admin use only)
+        // Get all employees (For Admin use only)
         public async Task<List<Employee>> GetAllEmployeesAsync()
         {
             return await _context.Employees.ToListAsync();
         }
 
-        // ✅ Get employee by ID
+        // Get employee by ID
         public async Task<Employee?> GetEmployeeByIdAsync(int id)
         {
             return await _context.Employees.FindAsync(id);
         }
 
-        // ✅ Get employee by email (For login)
+        // Get employee by email (For login)
         public async Task<Employee?> GetEmployeeByEmailAsync(string email)
         {
             return await _context.Employees.FirstOrDefaultAsync(e => e.Email == email);
         }
 
-        // ✅ Add new employee (For Admins)
+        // Add new employee (For Admins)
         public async Task<Employee> AddEmployeeAsync(Employee employee, string password)
         {
             employee.PasswordHash = HashPassword(password);
@@ -51,7 +51,7 @@ namespace Backend.Services
             return employee;
         }
 
-        // ✅ Update employee details
+        // Update employee details
         public async Task<Employee?> UpdateEmployeeAsync(Employee employee)
         {
             var existingEmployee = await _context.Employees.FindAsync(employee.Id);
@@ -68,7 +68,7 @@ namespace Backend.Services
             return existingEmployee;
         }
 
-        // ✅ Delete employee
+        // Delete employee
         public async Task<bool> DeleteEmployeeAsync(int id)
         {
             var employee = await _context.Employees.FindAsync(id);
@@ -79,17 +79,17 @@ namespace Backend.Services
             return true;
         }
 
-        // ✅ Authenticate employee (For login)
+        // Authenticate employee (For login)
         public async Task<Employee?> AuthenticateEmployeeAsync(string email, string password)
         {
             var employee = await _context.Employees.FirstOrDefaultAsync(e => e.Email == email);
             if (employee == null || !VerifyPassword(password, employee.PasswordHash))
-                return null; // Return null if authentication fails
+                return null;
 
             return employee;
         }
 
-        // ✅ Hash password
+        // Hash password
         private string HashPassword(string password)
         {
             using var sha256 = SHA256.Create();
@@ -97,13 +97,13 @@ namespace Backend.Services
             return Convert.ToBase64String(bytes);
         }
 
-        // ✅ Verify password
+        // Verify password
         private bool VerifyPassword(string password, string storedHash)
         {
             return HashPassword(password) == storedHash;
         }
 
-        // ✅ Frontend API Calls (Blazor Web Requests)
+        // Frontend API Calls (Blazor Web Requests)
         public async Task<List<Employee>> FetchAllEmployeesAsync()
         {
             var response = await _httpClient.GetFromJsonAsync<List<Employee>>($"{ApiUrl}");
