@@ -3,6 +3,7 @@ using System;
 using Backend.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -10,9 +11,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Backend.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250202183255_UpdateTestData")]
+    partial class UpdateTestData
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder.HasAnnotation("ProductVersion", "9.0.1");
@@ -66,17 +69,6 @@ namespace Backend.Migrations
                             LastName = "Doe",
                             PasswordHash = "VN5/YG8lI8uo76wXP6tC+39Z1Wzv+XTI/bc0LPLP40U=",
                             Role = "Employee"
-                        },
-                        new
-                        {
-                            Id = 2,
-                            DateOfBirth = new DateTime(1985, 10, 20, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            Email = "jane.doe@example.com",
-                            FirstName = "Jane",
-                            HireDate = new DateTime(2023, 5, 5, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            LastName = "Doe",
-                            PasswordHash = "VN5/YG8lI8uo76wXP6tC+39Z1Wzv+XTI/bc0LPLP40U=",
-                            Role = "Admin"
                         });
                 });
 
@@ -166,7 +158,7 @@ namespace Backend.Migrations
                         new
                         {
                             Id = 8,
-                            EmployeeId = 2,
+                            EmployeeId = 1,
                             End = new DateTime(2024, 2, 1, 14, 0, 0, 0, DateTimeKind.Unspecified),
                             Start = new DateTime(2024, 2, 1, 10, 0, 0, 0, DateTimeKind.Unspecified),
                             Task = "Bug fixes and testing"
@@ -174,7 +166,7 @@ namespace Backend.Migrations
                         new
                         {
                             Id = 9,
-                            EmployeeId = 2,
+                            EmployeeId = 1,
                             End = new DateTime(2024, 2, 2, 22, 0, 0, 0, DateTimeKind.Unspecified),
                             Start = new DateTime(2024, 2, 2, 10, 0, 0, 0, DateTimeKind.Unspecified),
                             Task = "Bug fixes and testing"
@@ -182,7 +174,7 @@ namespace Backend.Migrations
                         new
                         {
                             Id = 10,
-                            EmployeeId = 2,
+                            EmployeeId = 1,
                             End = new DateTime(2024, 2, 3, 16, 0, 0, 0, DateTimeKind.Unspecified),
                             Start = new DateTime(2024, 2, 3, 10, 0, 0, 0, DateTimeKind.Unspecified),
                             Task = "Bug fixes and testing"

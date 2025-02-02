@@ -11,6 +11,7 @@ var builder = WebApplication.CreateBuilder(args);
 // Register Services
 builder.Services.AddScoped<WorktimeService>();
 builder.Services.AddScoped<EmployeeService>();
+builder.Services.AddHttpClient<EmployeeService>();
 
 // Register SQLite Database
 builder.Services.AddDbContext<ApplicationDbContext>(options =>

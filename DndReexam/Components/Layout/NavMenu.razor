@@ -1,5 +1,8 @@
 ﻿
 @using Havit.Blazor.Components
+@using DndReexam.Services
+@inject AuthService AuthService
+@rendermode @(new InteractiveServerRenderMode(prerender: false))
 
 <div class="d-flex border overflow-hidden sidebar-inner" data-bs-theme="dark">
 	<HxSidebar>
@@ -9,10 +12,13 @@
 
 		<ItemsTemplate>
 			<HxSidebarItem Text="Dashboard" Icon="BootstrapIcon.Columns" TooltipText="Dashboard" Href="/home" />
+			@if (isAdmin)
+			{
 			<HxSidebarItem Text="Employees" Icon="BootstrapIcon.People" Href="/employees">
 				<HxSidebarItem Text="Overview" Href="/employees" />
 				<HxSidebarItem Text="Absences" Href="/components/HxSidebar/absences" />
 			</HxSidebarItem>
+			}
 		</ItemsTemplate>
 
         <FooterTemplate>
@@ -24,3 +30,24 @@
         </FooterTemplate>
 	</HxSidebar>
 </div>
+
+
+
+@code {
+    private bool isAdmin = false;
+    private bool hasCheckedRole = false;
+
+	@* protected override async Task OnInitializedAsync() *@
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+		Console.WriteLine("inside of onadterrenderasync");
+		if (firstRender && !hasCheckedRole)
+        {
+            var role = await AuthService.GetUserRoleAsync();
+            isAdmin = role == "Admin";
+            hasCheckedRole = true;
+			Console.WriteLine(isAdmin);
+            StateHasChanged(); // Re-render UI after checking role
+        }
+    }
+}

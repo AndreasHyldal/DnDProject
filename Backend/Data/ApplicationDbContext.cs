@@ -19,56 +19,118 @@ namespace Backend.Data
         {
             base.OnModelCreating(modelBuilder);
 
-            // ✅ Seed Employee (Test User)
-            var testEmployee = new Employee
+        modelBuilder.Entity<Employee>().HasData(
+            new Employee
             {
                 Id = 1,
                 FirstName = "John",
                 LastName = "Doe",
                 Email = "john.doe@example.com",
-                PasswordHash = HashPassword("Test123!"), // Hash the password
+                PasswordHash = HashPassword("Test123!"),
                 Role = "Employee",
                 DateOfBirth = new DateTime(1990, 5, 15),
-                HireDate = new DateTime(2024, 2, 1) // ✅ Static value instead of DateTime.UtcNow
-            };
-
-            // ✅ Seed Employee (Test Admin User)
-            var adminTestEmployee = new Employee
+                HireDate = new DateTime(2024, 2, 1)
+            },
+            new Employee
             {
-                Id = 2, // Must be unique
+                Id = 2,
                 FirstName = "Jane",
                 LastName = "Doe",
                 Email = "jane.doe@example.com",
-                PasswordHash = HashPassword("Test123!"), // Hash the password
+                PasswordHash = HashPassword("Test123!"),
                 Role = "Admin",
                 DateOfBirth = new DateTime(1985, 10, 20),
-                HireDate = new DateTime(2023, 5, 5) // ✅ Static value instead of DateTime.UtcNow
-            };
+                HireDate = new DateTime(2023, 5, 5)
+            }
+        );
 
-            // ✅ Seed Worktime Entries (Only FK is set)
-            var worktimes = new List<Worktime>
+        // ✅ Seed Worktime Entries (Only EmployeeId, No Navigation Property)
+        var worktimes = new List<Worktime>
+        {
+            new Worktime
             {
-                new Worktime
-                {
-                    Id = 1,
-                    EmployeeId = testEmployee.Id, // Use FK only
-                    Start = new DateTime(2024, 2, 1, 9, 0, 0),
-                    End = new DateTime(2024, 2, 1, 17, 0, 0),
-                    Task = "Worked on frontend UI"
-                },
-                new Worktime
-                {
-                    Id = 2,
-                    EmployeeId = testEmployee.Id, // Use FK only
-                    Start = new DateTime(2024, 2, 2, 10, 0, 0),
-                    End = new DateTime(2024, 2, 2, 16, 0, 0),
-                    Task = "Bug fixes and testing"
-                }
-            };
+                Id = 1,
+                EmployeeId = 1, // ✅ Only use FK, don't set Employee
+                Start = new DateTime(2024, 2, 1, 9, 0, 0),
+                End = new DateTime(2024, 2, 1, 17, 0, 0),
+                Task = "Worked on frontend UI"
+            },
+            new Worktime
+            {
+                Id = 2,
+                EmployeeId = 1, // ✅ Only use FK, don't set Employee
+                Start = new DateTime(2024, 2, 2, 10, 0, 0),
+                End = new DateTime(2024, 2, 2, 16, 0, 0),
+                Task = "Bug fixes and testing"
+            },
+            new Worktime
+            {
+                Id = 3,
+                EmployeeId = 1, // ✅ Only use FK, don't set Employee
+                Start = new DateTime(2024, 2, 3, 10, 0, 0),
+                End = new DateTime(2024, 2, 3, 20, 0, 0),
+                Task = "Bug fixes and testing"
+            },
+            new Worktime
+            {
+                Id = 4,
+                EmployeeId = 1, // ✅ Only use FK, don't set Employee
+                Start = new DateTime(2024, 2, 4, 10, 0, 0),
+                End = new DateTime(2024, 2, 4, 14, 0, 0),
+                Task = "Bug fixes and testing"
+            },
+            new Worktime
+            {
+                Id = 5,
+                EmployeeId = 1, // ✅ Only use FK, don't set Employee
+                Start = new DateTime(2024, 2, 5, 10, 0, 0),
+                End = new DateTime(2024, 2, 5, 14, 0, 0),
+                Task = "Bug fixes and testing"
+            },
+            new Worktime
+            {
+                Id = 6,
+                EmployeeId = 1, // ✅ Only use FK, don't set Employee
+                Start = new DateTime(2024, 2, 6, 10, 0, 0),
+                End = new DateTime(2024, 2, 6, 16, 0, 0),
+                Task = "Bug fixes and testing"
+            },
+            new Worktime
+            {
+                Id = 7,
+                EmployeeId = 1, // ✅ Only use FK, don't set Employee
+                Start = new DateTime(2024, 2, 7, 10, 0, 0),
+                End = new DateTime(2024, 2, 7, 16, 0, 0),
+                Task = "Bug fixes and testing"
+            },
+            new Worktime
+            {
+                Id = 8,
+                EmployeeId = 2, // ✅ Only use FK, don't set Employee
+                Start = new DateTime(2024, 2, 1, 10, 0, 0),
+                End = new DateTime(2024, 2, 1, 14, 0, 0),
+                Task = "Bug fixes and testing"
+            },
+            new Worktime
+            {
+                Id = 9,
+                EmployeeId = 2, // ✅ Only use FK, don't set Employee
+                Start = new DateTime(2024, 2, 2, 10, 0, 0),
+                End = new DateTime(2024, 2, 2, 22, 0, 0),
+                Task = "Bug fixes and testing"
+            },
+            new Worktime
+            {
+                Id = 10,
+                EmployeeId = 2, // ✅ Only use FK, don't set Employee
+                Start = new DateTime(2024, 2, 3, 10, 0, 0),
+                End = new DateTime(2024, 2, 3, 16, 0, 0),
+                Task = "Bug fixes and testing"
+            }
+        };
 
-            modelBuilder.Entity<Employee>().HasData(testEmployee, adminTestEmployee);
-            modelBuilder.Entity<Worktime>().HasData(worktimes);
-        }
+        modelBuilder.Entity<Worktime>().HasData(worktimes); // ✅ No Employee object here
+    }
 
         private static string HashPassword(string password)
         {

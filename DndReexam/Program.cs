@@ -13,13 +13,15 @@ builder.Services.AddRazorComponents()
 // Register WorktimeService
 builder.Services.AddScoped<WorktimeService>();
 
+// Register AuthService
+builder.Services.AddScoped<AuthService>();
+
 // Add UI frameworks and local storage service
 builder.Services.AddHxServices();
 builder.Services.AddMudServices();
 builder.Services.AddBlazoredLocalStorage();
 
 // Register AuthService and HttpClient
-builder.Services.AddScoped<IAuthService, AuthService>();
 builder.Services.AddScoped(sp => new HttpClient { BaseAddress = new Uri("http://localhost:5147/") });
 
 var app = builder.Build();
