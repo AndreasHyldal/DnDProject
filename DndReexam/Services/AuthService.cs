@@ -16,6 +16,11 @@ public class AuthService
         _localStorage = localStorage;
     }
 
+    public async Task<string?> GetTokenAsync()
+    {
+        return await _localStorage.GetItemAsync<string>("jwt_token");
+    }
+
     public async Task<string?> GetUserRoleAsync()
     {
         var token = await _localStorage.GetItemAsync<string>("jwt_token");

@@ -1,5 +1,6 @@
 ﻿@page "/home"
 @inject WorktimeService WorktimeService
+@inject AuthService AuthService
 @inject IJSRuntime JS
 @using MudBlazor
 
@@ -9,88 +10,90 @@
 {
     <MudProgressCircular Indeterminate="true" />
 }
-@* else if (worktimeSummary.Count == 0) *@
 else
 {
     <div class="grid-container">
+        <!-- First Row -->
+        <div class="first-row main-content">
+            <WorktimeChart
+                Series="@chartSeries" 
+                Labels="@chartLabels" 
+                Width="100%" 
+                Height="350px"
+            />
+        </div>
+        <div class="first-row side-content">
+            Sidebar (20%)
+        </div>
 
-    <div class="first-row main-content">
-        <WorktimeChart
-            Series="@chartSeries" 
-            Labels="@chartLabels" 
-            Width="100%" 
-            Height="350px"
-        />
-    </div>
-    <div class="first-row side-content">
-        Sidebar (20%)
-    </div>
-
-    <!-- Second Row -->
-    <div class="second-row">
-        <table class="table">
-            <thead>
-                <tr>
-                    <th>Date</th>
-                    <th aria-label="Start time">Start</th>
-                    <th aria-label="End time">End</th>
-                    <th>Task</th>
-                </tr>
-            </thead>
-            <tbody>
-                @foreach (var workRecord in worktimeRaw)
-                {
+        <!-- Second Row -->
+        <div class="second-row">
+            <table class="table">
+                <thead>
                     <tr>
-                        <!-- Print date in YYYY-MM-DD, for example -->
-                        <td>@(workRecord.Start.ToString("yyyy-MM-dd"))</td>
-                        
-                        <!-- Print start time in HH:mm (24-hour) format -->
-                        <td>@(workRecord.Start.ToString("HH:mm"))</td>
-                        
-                        <!-- Print end time in HH:mm (24-hour) format -->
-                        <td>@(workRecord.End.ToString("HH:mm"))</td>
-                        
-                        <!-- Task as-is -->
-                        <td>@workRecord.Task</td>
+                        <th>Date</th>
+                        <th aria-label="Start time">Start</th>
+                        <th aria-label="End time">End</th>
+                        <th>Task</th>
                     </tr>
-                }
-            </tbody>
-        </table>
+                </thead>
+                <tbody>
+                    @foreach (var workRecord in worktimeRaw)
+                    {
+                        <tr>
+                            <td>@(workRecord.Start.ToString("yyyy-MM-dd"))</td>
+                            <td>@(workRecord.Start.ToString("HH:mm"))</td>
+                            <td>@(workRecord.End.ToString("HH:mm"))</td>
+                            <td>@workRecord.Task</td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
     </div>
-</div>
-
 }
 
 @code {
     private List<WorktimeSummary>? worktimeSummary;
     private List<WorktimeRaw>? worktimeRaw;
-    @* private double[] chartData = Array.Empty<double>(); *@
     private int employeeId = 1;
     private string[] chartLabels = Array.Empty<string>();
-    private List<ChartSeries> chartSeries = new(); // <-- store chart series here
+    private List<ChartSeries> chartSeries = new();
+    private string token;
 
-    protected override async Task OnInitializedAsync()
+
+    @* protected override async Task OnAfterRenderAsync(bool firstRender)
     {
-        worktimeSummary = await WorktimeService.GetWorktimeSummaryAsync(employeeId);
-        worktimeRaw = await WorktimeService.GetWorktimeRawAsync(employeeId);
-
-    if (worktimeSummary is { Count: > 0 })
+        if (firstRender)
         {
-            // Labels for the X-Axis
-            chartLabels = worktimeSummary.Select(x => x.Date).ToArray();
+            token = await AuthService.GetTokenAsync();
+            worktimeSummary = await WorktimeService.GetWorktimeSummaryAsync(employeeId);
+            worktimeRaw = await WorktimeService.GetWorktimeRawAsync(employeeId, token);
 
-            // Build the chart series (one series for "TotalHours")
-            var totalHoursData = worktimeSummary.Select(x => x.TotalHours).ToArray();
+            // Now retrieve worktime data using the token
 
-            chartSeries = new List<ChartSeries>
+            if (worktimeSummary is { Count: > 0 })
             {
-                new ChartSeries
+                // Build labels for the X-Axis from the summary dates
+                chartLabels = worktimeSummary.Select(x => x.Date).ToArray();
+
+                // Prepare the chart series data (e.g., total hours worked)
+                var totalHoursData = worktimeSummary.Select(x => x.TotalHours).ToArray();
+
+                chartSeries = new List<ChartSeries>
                 {
-                    Name = "Worktime",
-                    Data = totalHoursData
-                }
-            };
-        }
+                    new ChartSeries
+                    {
+                        Name = "Worktime",
+                        Data = totalHoursData
+                    }
+                };
+            }
+
+            await base.OnAfterRenderAsync(firstRender);
+    } *@
+    
+
+        
     }
 
-}

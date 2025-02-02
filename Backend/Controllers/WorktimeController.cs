@@ -1,6 +1,8 @@
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Authorization;
 using Backend.Services;
 using Backend.Models;
+using System.Security.Claims;
 
 namespace Backend.Controllers
 {
@@ -8,12 +10,39 @@ namespace Backend.Controllers
     [ApiController]
     public class WorktimeController(WorktimeService _worktimeService) : ControllerBase
     {
-        // Get Worktime by Employee ID
+        [Authorize]
+        [HttpGet("employee")]
+        public async Task<ActionResult<List<Worktime>>> GetMyWorktimes()
+        {
+            // 1) Get user ID from token
+            string userIdString = User.FindFirst("sub")?.Value 
+                                ?? User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            Console.WriteLine(userIdString);
+            if (string.IsNullOrEmpty(userIdString))
+            {
+                return Unauthorized();
+            }
+
+            if (!int.TryParse(userIdString, out int userId))
+            {
+                return Unauthorized();
+            }
+
+            // 2) Retrieve only that user’s worktimes
+            var worktimes = await _worktimeService.GetWorktimesByEmployeeIdAsync(userId);
+            if (worktimes == null)
+            {
+                return NotFound(); 
+            }
+
+            return Ok(worktimes);
+        }
+
         [HttpGet("employee/{employeeId}")]
         public async Task<ActionResult<List<Worktime>>> GetByEmployeeId(int employeeId)
         {
             var worktimes = await _worktimeService.GetWorktimesByEmployeeIdAsync(employeeId);
-            return worktimes is null ? NotFound() : Ok(worktimes);
+            return (worktimes == null) ? NotFound() : Ok(worktimes);
         }
 
         //  Get Worktime Sum Per Day (For Bar Chart)

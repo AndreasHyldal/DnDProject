@@ -1,5 +1,6 @@
 using System.Net.Http;
 using System.Net.Http.Json;
+using System.Net.Http.Headers;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Backend.Models;
@@ -13,11 +14,10 @@ namespace DndReexam.Services
         private const string WorktimeApiUrl = "http://localhost:5147/api/worktime";
         private const string EmployeeApiUrl = "http://localhost:5147/employees";
 
-        public WorktimeService(HttpClient httpClient)
+        public WorktimeService(HttpClient http)
         {
-            _http = httpClient;
+            _http = http;
         }
-
         // Get worktime summary for an employee (for chart)
         public async Task<List<WorktimeSummary>> GetWorktimeSummaryAsync(int employeeId)
         {
@@ -33,20 +33,26 @@ namespace DndReexam.Services
             }
         }
 
-        public async Task<List<WorktimeRaw>> GetWorktimeRawAsync(int employeeId)
+        public async Task<List<WorktimeRaw>> GetWorktimeRawAsync(int employeeId, string token)
         {
+            // Set the Authorization header with the bearer token
+            _http.DefaultRequestHeaders.Authorization = 
+                new AuthenticationHeaderValue("Bearer", token);
+
             try
             {
-                var response = await _http.GetFromJsonAsync<List<WorktimeRaw>>($"{WorktimeApiUrl}/employee/{employeeId}");
+                var response = await _http.GetFromJsonAsync<List<WorktimeRaw>>(
+                    $"{WorktimeApiUrl}/employee/{employeeId}"
+                );
                 return response ?? new List<WorktimeRaw>();
             }
             catch (HttpRequestException ex)
             {
                 Console.WriteLine($"Error fetching worktime raw data: {ex.Message}");
-                return new List<WorktimeRaw>(); // Return empty list on failure
+                return new List<WorktimeRaw>(); 
             }
         }
-
+        
         // Add a new worktime entry
         public async Task<bool> AddWorktimeAsync(Worktime worktime)
         {

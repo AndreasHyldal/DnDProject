@@ -51,8 +51,7 @@
             }
         }
         catch (Exception ex)
-        {   
-            Console.WriteLine($"ex {ex.Message}");
+        {
             ErrorMessage = "Error connecting to server.";
         }
     }
@@ -67,6 +66,4 @@
     {
         public string Token { get; set; } = string.Empty;
     }
-}
-
 }
