@@ -14,7 +14,7 @@ builder.Services.AddDbContext<ApplicationDbContext>(options =>
 builder.Services.AddCors(options =>
 {
     options.AddPolicy("AllowFrontend",
-        policy => policy.WithOrigins("https://localhost:5001") // Adjust frontend URL
+        policy => policy.WithOrigins("http://localhost:5075") // Adjust frontend URL
                         .AllowAnyMethod()
                         .AllowAnyHeader());
 });

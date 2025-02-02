@@ -8,7 +8,7 @@ namespace DndReexam.Services
 {
     public class WorktimeService(HttpClient _http)
     {
-        private const string ApiUrl = "https://localhost:5075/api/worktime";
+        private const string ApiUrl = "http://localhost:5075/api/worktime";
 
         // Get worktime summary for an employee (for chart)
         public async Task<List<WorktimeSummary>> GetWorktimeSummaryAsync(int employeeId)
