@@ -1,8 +1,14 @@
-using System;
-using System.Threading.Tasks;
-using Backend.Models;
-using Backend.Services;
+using Backend.Models; 
+using Backend.Services; 
+using Backend.Data;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Configuration;
+using Microsoft.IdentityModel.Tokens;
+using System;
+using System.IdentityModel.Tokens.Jwt;
+using System.Security.Claims;
+using System.Text;
+using System.Threading.Tasks;
 
 namespace Backend.Controllers
 {
@@ -11,21 +17,19 @@ namespace Backend.Controllers
     public class AuthController : ControllerBase
     {
         private readonly EmployeeService _employeeService;
-        private readonly TokenService _tokenService;
-        
-        public AuthController(EmployeeService employeeService, TokenService tokenService)
+        private readonly IConfiguration _configuration;
+
+        public AuthController(EmployeeService employeeService, IConfiguration configuration)
         {
             _employeeService = employeeService;
-            _tokenService = tokenService;
+            _configuration = configuration;
         }
-        
-        // DTO for login requests
-        public class LoginRequest
-        {
-            public string Email { get; set; } = string.Empty;
-            public string Password { get; set; } = string.Empty;
-        }
-        
+
+        /// <summary>
+        /// Endpoint to authenticate a user and retrieve a JWT token.
+        /// </summary>
+        /// <param name="loginRequest">Object containing Email and Password</param>
+        /// <returns>JWT Token if successful</returns>
         [HttpPost("login")]
         public async Task<IActionResult> Login([FromBody] LoginRequest loginRequest)
         {
@@ -33,16 +37,21 @@ namespace Backend.Controllers
             {
                 return BadRequest("Invalid login request.");
             }
-            
-            // Use EmployeeService to authenticate the user.
-            var employee = await _employeeService.AuthenticateEmployeeAsync(loginRequest.Email, loginRequest.Password);
+
+            // Authenticate using the EmployeeService
+            var employee = await _employeeService.AuthenticateEmployeeAsync(
+                loginRequest.Email,
+                loginRequest.Password
+            );
+
             if (employee == null)
             {
                 return Unauthorized("Invalid credentials.");
             }
-            
-            // Generate JWT token (this token will include the employee's role as a claim)
-            var token = _tokenService.GenerateToken(employee);
+
+            // Generate JWT token
+            var token = GenerateJwtToken(employee);
+
             return Ok(new { token });
         }
 

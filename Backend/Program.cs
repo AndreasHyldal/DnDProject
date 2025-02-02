@@ -8,28 +8,37 @@ using System.Text;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Register services including EmployeeService and TokenService
-builder.Services.AddScoped<TokenService>();
-// Option 1: Register a default HttpClient (for all services that need it)
-builder.Services.AddHttpClient();
-// Option 2 (alternative): You could register EmployeeService as a typed client instead:
-// builder.Services.AddHttpClient<EmployeeService>();
-
-builder.Services.AddScoped<EmployeeService>();
+// Register Services
 builder.Services.AddScoped<WorktimeService>();
+builder.Services.AddScoped<EmployeeService>();
+builder.Services.AddHttpClient<EmployeeService>();
 
-// Register the SQLite database context
+// Register SQLite Database
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
     options.UseSqlite("Data Source=app.db"));
 
-// Configure JWT authentication
-builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+// Enable CORS for Blazor frontend to access API
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("AllowFrontend",
+        policy => policy.WithOrigins("http://localhost:5075") // Update this URL to match your Blazor frontend
+                        .AllowAnyMethod()
+                        .AllowAnyHeader());
+});
+
+// Configure JWT Authentication
+builder.Services.AddAuthentication(options =>
+    {
+        options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+        options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+    })
     .AddJwtBearer(options =>
     {
         options.RequireHttpsMetadata = false;
         options.SaveToken = true;
         var jwtKey = builder.Configuration["Jwt:Key"]
             ?? throw new InvalidOperationException("JWT Key is missing in configuration.");
+
         options.TokenValidationParameters = new TokenValidationParameters
         {
             ValidateIssuer = true,
@@ -42,48 +51,61 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
         };
     });
 
-// Register authorization services
+// Add Authorization
 builder.Services.AddAuthorization();
 
-// Add controllers and Swagger
+// Register Controllers & API Endpoints
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen(options =>
 {
-    options.SwaggerDoc("v1", new OpenApiInfo { Title = "My API", Version = "v1" });
+    options.SwaggerDoc("v1", new OpenApiInfo
+    {
+        Title = "DnDProject API",
+        Version = "v1",
+        Description = "API for managing timesheet of workers.",
+    });
+
+    // Add JWT Authentication to Swagger
     options.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
     {
         In = ParameterLocation.Header,
-        Description = "Enter 'Bearer' followed by a space and then your token",
+        Description = "Enter 'Bearer {your JWT token}'",
         Name = "Authorization",
-        Type = SecuritySchemeType.ApiKey
+        Type = SecuritySchemeType.Http,
+        Scheme = "bearer"
     });
-    options.AddSecurityRequirement(new OpenApiSecurityRequirement{
+
+    options.AddSecurityRequirement(new OpenApiSecurityRequirement
+    {
         {
-            new OpenApiSecurityScheme{
-                Reference = new OpenApiReference{
-                    Type = ReferenceType.SecurityScheme,
-                    Id = "Bearer"
-                }
+            new OpenApiSecurityScheme
+            {
+                Reference = new OpenApiReference { Type = ReferenceType.SecurityScheme, Id = "Bearer" }
             },
-            new string[] { }
+            new string[] {}
         }
     });
 });
 
 var app = builder.Build();
 
-if (app.Environment.IsDevelopment())
-{
-    app.UseSwagger();
-    app.UseSwaggerUI();
-}
-
+// Configure Middleware
+app.UseRouting();
+app.UseCors("AllowFrontend");
 app.UseHttpsRedirection();
-
 app.UseAuthentication();
 app.UseAuthorization();
+app.UseSwagger();
+app.UseSwaggerUI();
 
+// Map API Controllers
 app.MapControllers();
+
+// Enable OpenAPI Docs in Development
+if (app.Environment.IsDevelopment())
+{
+    app.MapOpenApi();
+}
 
 app.Run();
