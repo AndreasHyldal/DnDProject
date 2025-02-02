@@ -36,7 +36,7 @@ builder.Services.AddAuthentication(options =>
         options.RequireHttpsMetadata = false;
         options.SaveToken = true;
         var jwtKey = builder.Configuration["Jwt:Key"]
-        ?? throw new InvalidOperationException("JWT Key is missing in configuration.");
+            ?? throw new InvalidOperationException("JWT Key is missing in configuration.");
 
         options.TokenValidationParameters = new TokenValidationParameters
         {
@@ -90,11 +90,11 @@ builder.Services.AddSwaggerGen(options =>
 var app = builder.Build();
 
 // Configure Middleware
-app.UseRouting(); // Enable Routing
-app.UseCors("AllowFrontend"); // Apply CORS
-app.UseHttpsRedirection(); // Enforce HTTPS
-app.UseAuthentication(); // Enable Authentication
-app.UseAuthorization(); // Enable Authorization for secure endpoints
+app.UseRouting();
+app.UseCors("AllowFrontend");
+app.UseHttpsRedirection();
+app.UseAuthentication();
+app.UseAuthorization();
 app.UseSwagger();
 app.UseSwaggerUI();
 
@@ -107,5 +107,4 @@ if (app.Environment.IsDevelopment())
     app.MapOpenApi();
 }
 
-// Start the App
 app.Run();
