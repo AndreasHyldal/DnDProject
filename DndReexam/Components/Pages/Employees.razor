@@ -1,0 +1,158 @@
+@page "/admin/employees"
+@using System.Net.Http.Json
+@using Microsoft.AspNetCore.Authorization
+@using FE = DndReexam.Models    @* Alias "FE" refers to the Employee model in DndReexam.Models *@
+@inject HttpClient Http
+@attribute [Authorize(Roles = "Admin")]
+
+<h3>Employee Management</h3>
+
+@if (employees == null)
+{
+    <p><em>Loading employees...</em></p>
+}
+else
+{
+    <table class="table table-bordered table-striped">
+        <thead>
+            <tr>
+                <th>First Name</th>
+                <th>Last Name</th>
+                <th>Email</th>
+                <th>PasswordHash</th>
+                <th>Role</th>
+                <th>Edit</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var emp in employees)
+            {
+                <tr>
+                    <td>@emp.FirstName</td>
+                    <td>@emp.LastName</td>
+                    <td>@emp.Email</td>
+                    <td>@emp.PasswordHash</td>
+                    <td>@emp.Role</td>
+                    <td>
+                        <button class="btn btn-primary" @onclick="() => EditEmployee(emp)">Edit</button>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+
+<button class="btn btn-success" @onclick="AddNewEmployee">Add Employee</button>
+
+@if (isEditDialogOpen)
+{
+    <EditForm Model="editingEmployee" OnValidSubmit="HandleValidSubmit">
+        <DataAnnotationsValidator />
+        <ValidationSummary />
+        <div class="mb-3">
+            <label class="form-label">First Name</label>
+            <InputText class="form-control" @bind-Value="editingEmployee.FirstName" />
+        </div>
+        <div class="mb-3">
+            <label class="form-label">Last Name</label>
+            <InputText class="form-control" @bind-Value="editingEmployee.LastName" />
+        </div>
+        <div class="mb-3">
+            <label class="form-label">Email</label>
+            <InputText class="form-control" @bind-Value="editingEmployee.Email" />
+        </div>
+        <div class="mb-3">
+            <label class="form-label">Password</label>
+            <!-- 
+                For new or updated passwords, the admin enters a new plain text password.
+                If left blank when editing an existing employee, the password remains unchanged.
+            -->
+            <InputText class="form-control" @bind-Value="newPassword" type="password" />
+        </div>
+        <div class="mb-3">
+            <label class="form-label">Role</label>
+            <InputText class="form-control" @bind-Value="editingEmployee.Role" />
+        </div>
+        <button type="submit" class="btn btn-primary">Save</button>
+        <button type="button" class="btn btn-secondary ms-2" @onclick="CloseDialog">Cancel</button>
+    </EditForm>
+}
+
+@code {
+    // Mark employees as nullable since it will be populated asynchronously.
+    List<FE.Employee>? employees;
+    FE.Employee editingEmployee = new FE.Employee();
+    bool isEditDialogOpen = false;
+    // Holds the new plain text password entered by the admin.
+    string newPassword = string.Empty;
+
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadEmployees();
+    }
+
+    async Task LoadEmployees()
+    {
+        employees = await Http.GetFromJsonAsync<List<FE.Employee>>("api/employees");
+    }
+
+    void EditEmployee(FE.Employee emp)
+    {
+        // Clone the employee to avoid two-way binding issues.
+        editingEmployee = new FE.Employee
+        {
+            Id = emp.Id,
+            FirstName = emp.FirstName,
+            LastName = emp.LastName,
+            Email = emp.Email,
+            PasswordHash = emp.PasswordHash,
+            Role = emp.Role
+        };
+        newPassword = string.Empty; // Do not display the hashed password.
+        isEditDialogOpen = true;
+    }
+
+    void AddNewEmployee()
+    {
+        editingEmployee = new FE.Employee();
+        newPassword = string.Empty;
+        isEditDialogOpen = true;
+    }
+
+    async Task HandleValidSubmit()
+    {
+        if (editingEmployee.Id == 0)
+        {
+            // For a new employee, require a password.
+            if (string.IsNullOrWhiteSpace(newPassword))
+                return; // Optionally, display an error message.
+            // For this demo, assign the plain text to PasswordHash.
+            editingEmployee.PasswordHash = newPassword;
+            var response = await Http.PostAsJsonAsync("api/employees", editingEmployee);
+            if (response.IsSuccessStatusCode)
+            {
+                await LoadEmployees();
+                isEditDialogOpen = false;
+            }
+        }
+        else
+        {
+            // For an existing employee, update the password only if a new one is provided.
+            if (!string.IsNullOrWhiteSpace(newPassword))
+            {
+                editingEmployee.PasswordHash = newPassword;
+            }
+            var response = await Http.PutAsJsonAsync($"api/employees/{editingEmployee.Id}", editingEmployee);
+            if (response.IsSuccessStatusCode)
+            {
+                await LoadEmployees();
+                isEditDialogOpen = false;
+            }
+        }
+    }
+
+    void CloseDialog()
+    {
+        isEditDialogOpen = false;
+    }
+}
