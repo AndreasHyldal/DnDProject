@@ -25,39 +25,95 @@
             <DataAnnotationsValidator />
             <ValidationSummary />
 
+            <!-- Employee ID Input -->
             <div class="form-group">
                 <label for="employeeId">Employee ID</label>
                 <InputText id="employeeId" class="form-control" @bind-Value="loginModel.EmployeeId" placeholder="(e.g. 123456)" style="font-size: 18px;" />
             </div>
 
+            <!-- Password Input -->
             <div class="form-group mt-3">
                 <label for="password">Password</label>
                 <InputText id="password" class="form-control" type="password" @bind-Value="loginModel.Password" placeholder="(e.g. 1234)" style="font-size: 18px;" />
             </div>
 
+            <!-- Error Label -->
             <div class="text-danger">@errorLabel</div>
 
+            <!-- Submit Button -->
             <button type="submit" class="btn btn-primary w-100 mt-4" style="font-size: 20px;">Login</button>
         </EditForm>
     </div>
 </div>
 
-@code {
-    private async Task CallApiAsync()
+<!-- TEST SEGMENT 
+code {
+    private PersonBaseDTO loginModel { get; set; } = new PersonBaseDTO
     {
-        var client = ClientFactory.CreateClient();
-        var response = await client.GetAsync("https://api.example.com/data");
-        var content = await response.Content.ReadAsStringAsync();
-        Console.WriteLine(content);
+        EmployeeId = string.Empty,
+        Password = string.Empty
+    };
+
+    private string errorLabel = "";
+
+    protected override async Task OnInitializedAsync()
+    {
+        Console.WriteLine("Testing AuthService.LoginAsync directly...");
+
+        // Hardcoded credentials for testing
+        var testEmployeeId = "admin";
+        var testPassword = "admin123";
+
+        // Call LoginAsync directly
+        var role = await AuthService.LoginAsync(testEmployeeId, testPassword);
+
+        if (string.IsNullOrEmpty(role))
+        {
+            Console.WriteLine("Direct LoginAsync test: Login failed (Invalid credentials).");
+        }
+        else
+        {
+            Console.WriteLine($"Direct LoginAsync test: Login successful. Role: {role}");
+        }
     }
 
-    private PersonBaseDTO loginModel { get; set; } = new PersonBaseDTO()
-    {
-        EmployeeId = string.Empty, // Initialize with an empty string
-        Password = string.Empty    // Initialize with an empty string
-    };
-        
-       
+    private async Task HandleLogin()
+    { 
+        errorLabel = "";
+
+        Console.WriteLine("HandleLogin called");
+        Console.WriteLine($"EmployeeId entered: {loginModel.EmployeeId}");
+        Console.WriteLine($"Password entered: {loginModel.Password}");
+
+        try
+        {
+            // Call AuthService to validate login
+            var role = await AuthService.LoginAsync(loginModel.EmployeeId, loginModel.Password);
+
+            if (!string.IsNullOrEmpty(role))
+            {
+                Console.WriteLine($"Login successful. Role: {role}");
+                await LocalStorage.SetItemAsync("userRole", role);
+                NavigationManager.NavigateTo("/home");
+            }
+            else
+            {
+                Console.WriteLine("Invalid credentials provided.");
+                errorLabel = "Invalid Employee ID or Password. Please try again.";
+            }
+        }
+        catch (Exception e)
+        {
+            Console.WriteLine($"Login error: {e.Message}");
+            errorLabel = $"Error: {e.Message}";
+        }
+    }
+} -->
+
+
+@code {
+    [SupplyParameterFromForm]
+    private PersonBaseDTO loginModel { get; set; } = new PersonBaseDTO();
     private string errorLabel = "";
 
     protected override async Task OnInitializedAsync()
@@ -67,7 +123,7 @@
 
         if (user.Identity != null && user.Identity.IsAuthenticated)
         {
-            NavigationManager.NavigateTo("/dashboard");
+            NavigationManager.NavigateTo("/home");
         }
     }
 
@@ -78,7 +134,7 @@
         try
         {
             await AuthService.LoginAsync(loginModel.EmployeeId, loginModel.Password);
-            NavigationManager.NavigateTo("/dashboard");
+            NavigationManager.NavigateTo("/home");
         }
         catch (Exception e)
         {
@@ -86,4 +142,5 @@
             errorLabel = $"Error: {e.Message}";
         }
     }
+    
 }

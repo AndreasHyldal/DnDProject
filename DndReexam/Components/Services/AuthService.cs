@@ -15,11 +15,17 @@ namespace DndReexam.Services
         };
 
         // Handle user login
-        public Task<string?> LoginAsync(string username, string password)
+        public Task<string?> LoginAsync(string EmployeeId, string password)
         {
-            var user = _users.FirstOrDefault(u => u.EmployeeId == username && u.Password == password);
+            Console.WriteLine($"Attempting login with EmployeeId: {EmployeeId}, Password: {password}");
+            
+            var user = _users.FirstOrDefault(u => u.EmployeeId == EmployeeId && u.Password == password);
+            
+            Console.WriteLine(user == null ? "User not found or invalid credentials" : $"User found: {user.EmployeeId}, Role: {user.Role}");
+            
             return Task.FromResult(user?.Role);
         }
+
 
         public Task<bool> RegisterAsync(PersonBaseDTO user)
         {
