@@ -2,10 +2,9 @@
 .NET Development Course Project
 
 Andreas Ahlstrøm Hyldal Thomsen (316130) - AndreasHyldal - https://github.com/AndreasHyldal \
-Alexander Plombom (...) - ayergoo - https://github.com/ayergoo \
-Markus Moeslund (...) - MarkusBM - https://github.com/MarkusBM
+Alexander Plombom (316114) - ayergoo - https://github.com/ayergoo 
 
-# Developer Blog for DnDProject:
+# Software Blog:
 
 Welcome to the developer blog for the DnDProject! Below are the links to each blog post documenting the development process.
 
