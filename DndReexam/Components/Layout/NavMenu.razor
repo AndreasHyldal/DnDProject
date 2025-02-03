@@ -2,6 +2,7 @@
 @using Havit.Blazor.Components
 @using DndReexam.Services
 @inject AuthService AuthService
+@inject NavigationManager NavigationManager
 @rendermode @(new InteractiveServerRenderMode(prerender: false))
 
 <div class="d-flex border overflow-hidden sidebar-inner" data-bs-theme="dark">
@@ -11,7 +12,7 @@
 		</HeaderTemplate>
 
 		<ItemsTemplate>
-			<HxSidebarItem Text="Dashboard" Icon="BootstrapIcon.Columns" TooltipText="Dashboard" Href="/home" />
+			<HxSidebarItem Text="Dashboard" Icon="BootstrapIcon.Columns" TooltipText="Dashboard" Href="/home" @onclick="ForceRefresh"/>
 			@if (isAdmin)
 			{
 			<HxSidebarItem Text="Employees" Icon="BootstrapIcon.People" Href="admin/employees">
@@ -38,6 +39,11 @@
     private bool hasCheckedRole = false;
 
 	@* protected override async Task OnInitializedAsync() *@
+
+    private void ForceRefresh()
+    {
+        NavigationManager.NavigateTo("/home", forceLoad: true);
+    }
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
 		if (firstRender && !hasCheckedRole)

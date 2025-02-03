@@ -169,11 +169,13 @@ else
             if (worktimeSummary is { Count: > 0 })
             {
                 // Build labels for the X-Axis from the summary dates
-                chartLabels = worktimeSummary.Select(x => x.Date).ToArray();
+                chartLabels = worktimeSummary
+                .Select(x => DateTime.Parse(x.Date).ToString("yyyy-MM-dd"))
+                .ToArray();
 
                 // Prepare the chart series data (e.g., total hours worked)
                 var totalHoursData = worktimeSummary.Select(x => x.TotalHours).ToArray();
-
+                
                 chartSeries = new List<ChartSeries>
                 {
                     new ChartSeries
@@ -189,12 +191,4 @@ else
     }
 
     }
-
-    @* protected override async Task OnAfterRenderAsync(bool firstRender)
-    {
-        if (firstRender && !hasCheckedUser)
-        {
-
-        
-    } *@
 
