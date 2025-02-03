@@ -1,6 +1,6 @@
 namespace DndReexam.Models
 {
-    public class Employee
+    public class EditableEmployee
     {
         public int Id { get; set; }
         

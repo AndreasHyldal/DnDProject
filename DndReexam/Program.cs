@@ -15,6 +15,8 @@ builder.Services.AddScoped<WorktimeService>();
 
 // Register AuthService
 builder.Services.AddScoped<AuthService>();
+builder.Services.AddScoped<EmployeesService>();
+
 
 // Add UI frameworks and local storage service
 builder.Services.AddMudServices();
