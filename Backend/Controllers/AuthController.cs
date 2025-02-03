@@ -55,6 +55,21 @@ namespace Backend.Controllers
             return Ok(new { token });
         }
 
+        [HttpGet("user-id")]
+        public async Task<IActionResult> GetUserId(string email)
+        {
+
+            var userId = await _employeeService.GetUserIdFromEmail(email);
+
+
+            if (userId == null)
+            {
+                return Unauthorized("Invalid credentials.");
+            }
+
+            return Ok(userId);
+        }
+
         /// <summary>
         /// Generates the JWT token containing the employee's Email and Role
         /// </summary>

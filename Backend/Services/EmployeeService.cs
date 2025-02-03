@@ -110,6 +110,16 @@ namespace Backend.Services
             return response ?? new List<Employee>();
         }
 
+        public async Task<int> GetUserIdFromEmail(string email)
+        {
+            var user = await _context.Employees
+            .Where(u => u.Email == email)
+            .Select(u => u.Id) // Only fetch the ID for efficiency
+            .FirstOrDefaultAsync();
+
+        return user;
+        }
+
         public async Task<bool> DeleteEmployeeFromApiAsync(int employeeId)
         {
             var response = await _httpClient.DeleteAsync($"{ApiUrl}/{employeeId}");

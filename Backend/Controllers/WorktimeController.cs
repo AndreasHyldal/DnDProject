@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Authorization;
 using Backend.Services;
 using Backend.Models;
 using System.Security.Claims;
+using System.Text.Json;
 
 namespace Backend.Controllers
 {
@@ -34,7 +35,7 @@ namespace Backend.Controllers
         }
 
         [Authorize]
-        [HttpGet("employee/{day}")]
+        [HttpGet("employee/day/{day}")]
         public async Task<ActionResult<List<Worktime>>> GetMyWorktimes(string day)
         {
             // 1) Get user ID from token
@@ -55,6 +56,45 @@ namespace Backend.Controllers
             return Ok(worktimes);
         }
 
+
+        [Authorize]
+        [HttpPost("add")]
+        public async Task<ActionResult<List<Worktime>>> AddWorktime(Worktime worktime)
+        {   
+            Console.WriteLine("Isnide of the controller!!!!!!11");
+
+            Console.WriteLine(JsonSerializer.Serialize(worktime, new JsonSerializerOptions { WriteIndented = true }));
+
+            string userIdString = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            if (string.IsNullOrEmpty(userIdString))
+            {
+                return Unauthorized();
+            }
+
+            var result = await _worktimeService.PostNewWorktime(worktime, userIdString);
+            if (!result.IsSuccess)
+            {
+                return NotFound(result.ErrorMessage);
+            }
+
+            return Ok(result.Data);
+        }
+
+        public class OperationResult<T>
+        {
+            public bool IsSuccess { get; set; }
+            public T? Data { get; set; }
+            public string? ErrorMessage { get; set; }
+        }
+
+        public class WorktimeRaw
+        {
+            public DateTime Start { get; set; }
+
+            public DateTime End { get; set; }
+
+            public string Task { get; set; } = string.Empty;
+        }
 
 
 
@@ -99,12 +139,12 @@ namespace Backend.Controllers
         }
 
         // Add Worktime Entry
-        [HttpPost]
-        public async Task<ActionResult<Worktime>> AddWorktime(Worktime worktime)
-        {
-            var createdWorktime = await _worktimeService.AddWorktimeAsync(worktime);
-            return CreatedAtAction(nameof(GetByEmployeeId), new { employeeId = createdWorktime.EmployeeId }, createdWorktime);
-        }
+        // [HttpPost]
+        // public async Task<ActionResult<Worktime>> AddWorktime(Worktime worktime)
+        // {
+        //     var createdWorktime = await _worktimeService.AddWorktimeAsync(worktime);
+        //     return CreatedAtAction(nameof(GetByEmployeeId), new { employeeId = createdWorktime.EmployeeId }, createdWorktime);
+        // }
 
         // Update Worktime Entry
         [HttpPut("{id}")]

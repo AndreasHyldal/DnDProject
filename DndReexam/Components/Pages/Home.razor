@@ -4,6 +4,7 @@
 @inject IJSRuntime JS
 @using MudBlazor
 @rendermode @(new InteractiveServerRenderMode(prerender: false))
+@using System.Globalization;
 
 <PageTitle>Home</PageTitle>
 
@@ -24,7 +25,7 @@ else
             />
         </div>
         <div class="first-row side-content">
-            <h3><b>Today:</b></h3>
+            <h6><b>Today:</b></h6>
             <table class="table">
                 <thead>
                     <tr>
@@ -34,21 +35,25 @@ else
                     </tr>
                 </thead>
                 <tbody>
-                    @foreach (var workRecord in worktimeRaw)
+                    @foreach (var todayWorkRecord in todayWorktimeRaw)
                     {
                         <tr>
-                            <td>@(workRecord.Start.ToString("HH:mm"))</td>
-                            <td>@(workRecord.End.ToString("HH:mm"))</td>
-                            <td>@workRecord.Task</td>
+                            <td>@(todayWorkRecord.Start.ToString("HH:mm"))</td>
+                            <td>@(todayWorkRecord.End.ToString("HH:mm"))</td>
+                            <td>@todayWorkRecord.Task</td>
                         </tr>
                     }
                 </tbody>
             </table>
 
+            <button type="button" class="btn btn-primary add-button" data-bs-toggle="modal" data-bs-target="#worktimeModal">
+            Add
+            </button>
         </div>
 
         <!-- Second Row -->
         <div class="second-row">
+            <h6><b>Past:</b></h6>
             <table class="table">
                 <thead>
                     <tr>
@@ -71,19 +76,88 @@ else
                 </tbody>
             </table>
         </div>
+
+<!-- Modal -->
+<div class="modal fade" id="worktimeModal" tabindex="-1" aria-labelledby="worktimeModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <form id="worktimeForm">
+        <div class="modal-header">
+          <h5 class="modal-title" id="worktimeModalLabel">Add Worktime</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          <!-- Start Time Input -->
+          <div class="mb-3">
+            <label for="startTime" class="form-label">Start Time</label>
+            <input type="datetime-local" class="form-control" @bind="worktimeRawAdd.Start" id="startTime" name="startTime" required>
+          </div>
+          <!-- End Time Input -->
+          <div class="mb-3">
+            <label for="endTime" class="form-label">End Time</label>
+            <input type="datetime-local" class="form-control" @bind="worktimeRawAdd.End" id="endTime" name="endTime" required>
+          </div>
+          <!-- Task Input -->
+          <div class="mb-3">
+            <label for="task" class="form-label">Task</label>
+            <textarea class="form-control" @bind="worktimeRawAdd.Task" id="task" name="task" rows="3" required></textarea>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+          <button type="submit" @onclick="HandleAddTask" class="btn btn-primary">Save Worktime</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+
         </div>
 }
 
 
 @code {
+    private WorktimeRaw worktimeRawAdd = new WorktimeRaw();
     private List<WorktimeSummary>? worktimeSummary;
     private List<WorktimeRaw>? worktimeRaw;
     private List<WorktimeRaw>? todayWorktimeRaw;
     private string[] chartLabels = Array.Empty<string>();
     private List<ChartSeries> chartSeries = new();
-    private string token;
+    private string? token;
     private bool hasCheckedUser = false;
     private const string TODAY = "2024-02-03";
+    private string? startToday;
+    private string? endToday;
+
+    private async Task HandleAddTask()
+    {
+    try
+    {
+        bool success = await WorktimeService.AddWorktimeAsync(worktimeRawAdd, token);
+
+        if (!success)
+        {
+            Console.WriteLine("Error: Failed to add worktime.");
+            return;
+        }
+
+        Console.WriteLine("Worktime added successfully.");
+        StateHasChanged(); // Only trigger re-render on success
+    }
+    catch (Exception ex)
+    {
+        Console.WriteLine($"Exception in HandleAddTask: {ex.Message}");
+    }
+    }
+
+    protected override void OnInitialized()
+    {
+        DateTime todayDateTime = DateTime.ParseExact(TODAY, "yyyy-MM-dd", CultureInfo.InvariantCulture);
+
+        worktimeRawAdd.Start = todayDateTime; // Default to current date/time
+        worktimeRawAdd.End = todayDateTime; // Default to 1 hour later
+    }
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
@@ -117,7 +191,6 @@ else
             StateHasChanged(); // Re-render UI after checking role
 
     }
-    
 
         
     }

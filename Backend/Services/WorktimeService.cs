@@ -72,6 +72,9 @@ namespace Backend.Services
             // Parse the input string into a DateTime
             DateTime parsedDate = DateTime.ParseExact(day, "yyyy-MM-dd", CultureInfo.InvariantCulture);
             DateTime nextDay = parsedDate.AddDays(1);
+            // Use Console.WriteLine for proper formatting
+            Console.WriteLine($"Parsed Date: {parsedDate:yyyy-MM-dd}");
+            Console.WriteLine($"Next Day: {nextDay:yyyy-MM-dd}");
 
             return await _context.Worktimes
                 .Where(w => w.Employee.Email == employeeEmail 
@@ -108,6 +111,68 @@ namespace Backend.Services
                 .ToList();
 
             return summary.Cast<object>().ToList(); // ✅ Ensure correct return type
+        }
+
+
+        public async Task<OperationResult<List<Worktime>>> PostNewWorktime(Worktime worktime, string userEmail)
+        {
+            try
+            {
+                // Retrieve the employee record using the provided email
+                var employee = await _context.Employees.FirstOrDefaultAsync(e => e.Email == userEmail);
+                if (employee == null)
+                {
+                    return new OperationResult<List<Worktime>>
+                    {
+                        IsSuccess = false,
+                        ErrorMessage = "Employee not found."
+                    };
+                }
+
+                // Optionally perform additional validation on the worktime here
+
+                // Add the new worktime to the context and save changes
+                _context.Worktimes.Add(worktime);
+                await _context.SaveChangesAsync();
+
+                // Retrieve the updated list of worktimes for this employee
+                var worktimes = await _context.Worktimes
+                    .Where(w => w.EmployeeId == employee.Id)
+                    .OrderBy(w => w.Start)
+                    .ToListAsync();
+
+                return new OperationResult<List<Worktime>>
+                {
+                    IsSuccess = true,
+                    Data = worktimes
+                };
+            }
+            catch (Exception ex)
+            {
+                // Log the exception if necessary
+                return new OperationResult<List<Worktime>>
+                {
+                    IsSuccess = false,
+                    ErrorMessage = $"An error occurred while posting the new worktime: {ex.Message}"
+                };
+            }
+        }
+
+
+        public class WorktimeRaw
+        {
+            public DateTime Start { get; set; }
+
+            public DateTime End { get; set; }
+
+            public string Task { get; set; } = string.Empty;
+        }
+
+        public class OperationResult<T>
+        {
+            public bool IsSuccess { get; set; }
+            public T? Data { get; set; }
+            public string? ErrorMessage { get; set; }
         }
     }
 }

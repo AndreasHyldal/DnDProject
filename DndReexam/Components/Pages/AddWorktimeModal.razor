@@ -1,0 +1,81 @@
+@* @page "/add-worktime"
+@inject IJSRuntime JSRuntime
+
+<button class="btn btn-primary" @onclick="ShowModal">Add</button>
+
+<!-- Modal Markup -->
+<div class="modal fade" tabindex="-1" id="worktimeModal" role="dialog" aria-labelledby="worktimeModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <EditForm Model="@worktimeModel" OnValidSubmit="@HandleValidSubmit">
+                <DataAnnotationsValidator />
+                <div class="modal-header">
+                    <h5 class="modal-title" id="worktimeModalLabel">Add Worktime</h5>
+                    <button type="button" class="btn-close" @onclick="HideModal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <!-- Start Time: Only hours and minutes -->
+                    <div class="mb-3">
+                        <label for="startTime" class="form-label">Start Time</label>
+                        <InputTime id="startTime" @bind-Value="worktimeModel.StartTime" class="form-control" Format="hh\\:mm" />
+                    </div>
+                    <!-- End Time: Only hours and minutes -->
+                    <div class="mb-3">
+                        <label for="endTime" class="form-label">End Time</label>
+                        <InputTime id="endTime" @bind-Value="worktimeModel.EndTime" class="form-control" Format="hh\\:mm" />
+                    </div>
+                    <!-- Task Description -->
+                    <div class="mb-3">
+                        <label for="task" class="form-label">Task</label>
+                        <InputTextArea id="task" @bind-Value="worktimeModel.Task" class="form-control" rows="3" />
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" @onclick="HideModal">Close</button>
+                    <button type="submit" class="btn btn-primary">Save Worktime</button>
+                </div>
+            </EditForm>
+        </div>
+    </div>
+</div>
+
+@code {
+    private WorktimeModel worktimeModel = new WorktimeModel();
+
+    // Called when the user clicks the "Add" button to show the modal
+    private async Task ShowModal()
+    {
+        // Use JS interop to show the Bootstrap modal
+        await JSRuntime.InvokeVoidAsync("bootstrap.Modal.getOrCreateInstance", "#worktimeModal");
+        await JSRuntime.InvokeVoidAsync("$('#worktimeModal').modal", "show");
+    }
+
+    // Hide the modal (can be called on close button or after submission)
+    private async Task HideModal()
+    {
+        await JSRuntime.InvokeVoidAsync("$('#worktimeModal').modal", "hide");
+    }
+
+    // This method handles the form submission in Blazor
+    private async Task HandleValidSubmit()
+    {
+        // Process the worktimeModel (e.g. call a service to save it)
+        // For now, we'll just output to the console
+        Console.WriteLine($"Start: {worktimeModel.StartTime}, End: {worktimeModel.EndTime}, Task: {worktimeModel.Task}");
+
+        // Optionally, reset the model if you want to clear the form for next use
+        worktimeModel = new WorktimeModel();
+
+        // Hide the modal after a successful submission
+        await HideModal();
+    }
+
+    // A simple model for worktime input
+    public class WorktimeModel
+    {
+        // Using TimeSpan so that InputTime will only ask for time (hours/minutes)
+        public TimeSpan StartTime { get; set; } = new TimeSpan(8, 0, 0);
+        public TimeSpan EndTime { get; set; } = new TimeSpan(17, 0, 0);
+        public string Task { get; set; }
+    }
+} *@

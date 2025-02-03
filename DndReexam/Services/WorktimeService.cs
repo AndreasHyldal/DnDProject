@@ -5,18 +5,25 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using Backend.Models;
 using System.Text.Json.Serialization;
+using Microsoft.IdentityModel.Tokens;
+using Blazored.LocalStorage;
+using System.Text.Json;
 
 namespace DndReexam.Services
 {
     public class WorktimeService
     {
         private readonly HttpClient _http;
+
         private const string WorktimeApiUrl = "http://localhost:5147/api/worktime";
         private const string EmployeeApiUrl = "http://localhost:5147/employees";
-
-        public WorktimeService(HttpClient http)
+        private readonly AuthService _authService; // Injected AuthService
+        public WorktimeService(HttpClient http, AuthService authService)
         {
             _http = http;
+            _authService = authService;
+            _http.Timeout = TimeSpan.FromSeconds(30);
+
         }
         // Get worktime summary for an employee (for chart)
         public async Task<List<WorktimeSummary>> GetWorktimeSummaryAsync(string token)
@@ -66,7 +73,7 @@ namespace DndReexam.Services
             try
             {
                 var response = await _http.GetFromJsonAsync<List<WorktimeRaw>>(
-                    $"{WorktimeApiUrl}/employee/{day}"
+                    $"{WorktimeApiUrl}/employee/day/{day}"
                 );
                 return response ?? new List<WorktimeRaw>();
             }
@@ -79,10 +86,30 @@ namespace DndReexam.Services
 
 
         // Add a new worktime entry
-        public async Task<bool> AddWorktimeAsync(Worktime worktime)
+        public async Task<bool> AddWorktimeAsync(WorktimeRaw worktime, string token)
         {
-            var response = await _http.PostAsJsonAsync($"{WorktimeApiUrl}", worktime);
+            Console.WriteLine("1. INSIDE OF THE AddWorktimeAsync!!!");
+            // Set the Authorization header with the bearer token
+            _http.DefaultRequestHeaders.Authorization = 
+                new AuthenticationHeaderValue("Bearer", token);
+            string? userId = await _authService.GetUserIdAsync();
+            Console.WriteLine($"userId: {userId}");
+            Worktime wktm = ConvertWorktimeRawToWorktime(worktime, int.Parse(userId));
+            
+            try 
+            {
+            Console.WriteLine("INSIDE OF THE AddWorktimeAsync BUT IN TRY CLAUSE!!!");
+            Console.WriteLine(JsonSerializer.Serialize(wktm, new JsonSerializerOptions { WriteIndented = true }));
+            var response = await _http.PostAsJsonAsync($"{WorktimeApiUrl}/add", wktm);
+            Console.WriteLine($"after getting the response {response}");
+            
             return response.IsSuccessStatusCode;
+            }
+            catch (HttpRequestException ex)
+            {
+                Console.WriteLine($"Error fetching worktime raw data: {ex.Message}");
+                return false;
+            }
         }
 
         // Get all employees
@@ -153,7 +180,32 @@ namespace DndReexam.Services
                 return false;
             }
         }
+
+        public Worktime ConvertWorktimeRawToWorktime(WorktimeRaw raw, int employeeId)
+        {
+            Console.WriteLine($"The emplyeeid: {employeeId}");
+            return new Worktime
+            {
+                EmployeeId = employeeId,
+                Start = raw.Start,
+                End = raw.End,
+                Task = raw.Task
+                // Optionally: Leave Employee null, or set it if you have the Employee object.
+            };
+        }
+        // public WorktimeRaw ConvertWorktimeToWorktimeRaw(Worktime worktime)
+        // {
+        //     return new WorktimeRaw
+        //     {
+        //         EmployeeId = employeeId,
+        //         Start = raw.Start,
+        //         End = raw.End,
+        //         Task = raw.Task
+        //         // Optionally: Leave Employee null, or set it if you have the Employee object.
+        //     };
+        // }
     }
+
 
     public class WorktimeSummary
     {
@@ -167,10 +219,10 @@ namespace DndReexam.Services
     public class WorktimeRaw
     {
         [JsonPropertyName("start")]
-        public required DateTime Start { get; set; }
+        public DateTime Start { get; set; }
 
         [JsonPropertyName("end")]
-        public required DateTime End { get; set; }
+        public DateTime End { get; set; }
 
         [JsonPropertyName("task")]
         public string Task { get; set; } = string.Empty;

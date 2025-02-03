@@ -13,7 +13,6 @@ namespace Backend.Models
         [ForeignKey("Employee")]
         public int EmployeeId { get; set; }
         
-        [Required]
         public Employee? Employee { get; set; } 
 
         [Required]

@@ -32,3 +32,18 @@
     padding: 20px;
     border-radius: 8px;
 }
+
+.add-button {
+    background-color: #007bff; /* Primary blue */
+    color: white;
+    font-size: 16px;
+    font-weight: bold;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: background-color 0.3s ease, transform 0.2s ease;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+}
