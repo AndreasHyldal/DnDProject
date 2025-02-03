@@ -46,7 +46,8 @@
                 if (result != null && !string.IsNullOrEmpty(result.Token))
                 {
                     await LocalStorage.SetItemAsync("jwt_token", result.Token);
-                    Navigation.NavigateTo("/home");
+                    Navigation.NavigateTo("/home", forceLoad: true);
+
                 }
             }
             else

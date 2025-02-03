@@ -118,7 +118,6 @@ else
 
 
 @code {
-    private WorktimeRaw worktimeRawAdd = new WorktimeRaw();
     private List<WorktimeSummary>? worktimeSummary;
     private List<WorktimeRaw>? worktimeRaw;
     private List<WorktimeRaw>? todayWorktimeRaw;
@@ -129,6 +128,7 @@ else
     private const string TODAY = "2024-02-03";
     private string? startToday;
     private string? endToday;
+    private WorktimeRaw worktimeRawAdd = new WorktimeRaw();
 
     private async Task HandleAddTask()
     {
@@ -151,18 +151,14 @@ else
     }
     }
 
-    protected override void OnInitialized()
-    {
-        DateTime todayDateTime = DateTime.ParseExact(TODAY, "yyyy-MM-dd", CultureInfo.InvariantCulture);
 
-        worktimeRawAdd.Start = todayDateTime; // Default to current date/time
-        worktimeRawAdd.End = todayDateTime; // Default to 1 hour later
-    }
-
-    protected override async Task OnAfterRenderAsync(bool firstRender)
+    protected override async Task OnInitializedAsync()
     {
-        if (firstRender && !hasCheckedUser)
-        {
+            DateTime todayDateTime = DateTime.ParseExact(TODAY, "yyyy-MM-dd", CultureInfo.InvariantCulture);
+
+            worktimeRawAdd.Start = todayDateTime; // Default to current date/time
+            worktimeRawAdd.End = todayDateTime; // Default to 1 hour later
+            
             token = await AuthService.GetTokenAsync();
             worktimeSummary = await WorktimeService.GetWorktimeSummaryAsync(token);
             worktimeRaw = await WorktimeService.GetWorktimeRawAsync(token);
@@ -192,7 +188,13 @@ else
 
     }
 
-        
     }
 
-}
+    @* protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender && !hasCheckedUser)
+        {
+
+        
+    } *@
+
