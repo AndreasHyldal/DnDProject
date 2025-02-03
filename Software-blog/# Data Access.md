@@ -18,21 +18,23 @@ public class ApplicationDbContext : DbContext
     public DbSet<Employee> Employees { get; set; }
     public DbSet<Worktime> Worktimes { get; set; }
 }
+```
 
 This class maps our C# models (e.g., Employee, Worktime) to database tables automatically, eliminating the need for manual SQL table creation.
 
 ## Using LINQ vs. SQL
 LINQ (Language Integrated Query) allows us to write queries in C# that are translated into SQL by EF Core. For example, to retrieve all employees, instead of writing raw SQL like:
-SELECT * FROM Employees
+```SELECT * FROM Employees```
 
 We write:
-var employees = await _context.Employees.ToListAsync();
+```var employees = await _context.Employees.ToListAsync();```
 
 LINQ queries are strongly-typed, compile-time checked, and easier to maintain. They also allow us to compose queries dynamically, such as filtering and ordering results:
-var activeEmployees = await _context.Employees
+```var activeEmployees = await _context.Employees
     .Where(e => e.IsActive)
     .OrderBy(e => e.LastName)
     .ToListAsync();
+```
 
 ## Benefits of ORM and LINQ
 Productivity:
@@ -47,7 +49,7 @@ The ORM abstracts away database-specific details, making it easier to switch dat
 ## Code Example: Updating an Employee Record
 Below is an example of updating an employee record using EF Core:
 public async Task<bool> UpdateEmployeeAsync(Employee employee)
-{
+```{
     _context.Entry(employee).State = EntityState.Modified;
     try
     {
@@ -66,6 +68,7 @@ public async Task<bool> UpdateEmployeeAsync(Employee employee)
         }
     }
 }
+```
 
 This code handles data updates without writing any SQL, and the ORM manages concurrency and state tracking for us.
 
