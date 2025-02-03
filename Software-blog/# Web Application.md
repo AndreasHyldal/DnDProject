@@ -50,7 +50,7 @@ else
     </table>
 }
 <button @onclick="AddNewEmployee">Add Employee</button>
-´´´
+```
 
 ## Overview of Web Application Pages
 Our web application comprises several pages:
@@ -65,6 +65,7 @@ The frontend interacts with the backend API using an HttpClient. We encapsulate 
 
 For example, here’s how we retrieve a list of employees:
 
+```razor
 public async Task<List<Employee>> GetAllEmployeesAsync()
 {
     try
@@ -78,6 +79,7 @@ public async Task<List<Employee>> GetAllEmployeesAsync()
         return new List<Employee>();
     }
 }
+```
 
 In our Blazor components, we inject the HttpClient and call methods from WorktimeService to fetch data from endpoints like http://localhost:5147/api/employees.
 
