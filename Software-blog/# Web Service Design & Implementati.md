@@ -42,8 +42,9 @@ builder.Services.AddAuthentication(options =>
         IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtKey))
     };
 });
+```
 
-API Endpoints Overview
+## API Endpoints Overview
 Our API endpoints include:
 
 /api/auth/login:
@@ -56,6 +57,7 @@ Provides endpoints to add worktime entries and retrieve worktime summaries for e
 ## File Storage and Data Persistence
 We use Entity Framework Core with SQLite for data storage. Our ApplicationDbContext class is configured as follows:
 
+```sqlite
 public class ApplicationDbContext : DbContext
 {
     public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options)
@@ -64,7 +66,7 @@ public class ApplicationDbContext : DbContext
     public DbSet<Employee> Employees { get; set; }
     public DbSet<Worktime> Worktimes { get; set; }
 }
-
+```
 
 The SQLite database file (app.db) is stored locally on the server. This approach allows for simple file-based storage without the complexity of a full SQL Server installation, making it ideal for small to medium projects.
 
